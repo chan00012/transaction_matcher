@@ -3,7 +3,7 @@ package com.tutuka.transactionmatcher.dto.response;
 import lombok.Data;
 
 @Data
-public final class ReportReferenceNumber {
+public class ReportReferenceNumber {
 
     private String rrn;
 }

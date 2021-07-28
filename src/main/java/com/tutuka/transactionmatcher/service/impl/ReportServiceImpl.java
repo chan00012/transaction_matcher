@@ -32,6 +32,7 @@ public class ReportServiceImpl implements ReportService {
     @Override
     public ReportReferenceNumber generate(List<Transaction> t1, List<Transaction> t2) {
 
+
         ReportReferenceNumber reportReferenceNumber = new ReportReferenceNumber();
         reportReferenceNumber.setRrn(Utilities.generateReferenceNumber());
         CompletableFuture.runAsync(() -> {
@@ -40,7 +41,7 @@ public class ReportServiceImpl implements ReportService {
             } catch (Exception e) {
                 log.error("Exception occurred on async call - errorMessage: {}", e.getMessage());
                 ReportEntity re = reportRepository.get(reportReferenceNumber.getRrn());
-                re.setStatus(ReportStatus.FAIL);
+                re.setStatus(ReportStatus.FAILED);
                 re.setFailMsg(e.getMessage());
             }
         });
@@ -76,12 +77,6 @@ public class ReportServiceImpl implements ReportService {
 
     private void evaluate(List<Transaction> t1, List<Transaction> t2, String rrn) {
         log.info("Start evaluating transactions of report reference number: {}", rrn);
-        try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
         Set<TaggedTransaction> refTagTxnSet = getInitialAndTagDuplicateTransactions(t1, Origin.REFERENCE);
         Set<TaggedTransaction> comTagTxnSet = getInitialAndTagDuplicateTransactions(t2, Origin.COMPARE);
         Set<TaggedTransaction> matchedTransactionSet = new HashSet<>(refTagTxnSet);

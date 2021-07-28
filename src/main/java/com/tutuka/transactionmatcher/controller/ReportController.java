@@ -1,10 +1,13 @@
 package com.tutuka.transactionmatcher.controller;
 
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.tutuka.transactionmatcher.dto.response.MatchReport;
 import com.tutuka.transactionmatcher.dto.response.ReportReferenceNumber;
 import com.tutuka.transactionmatcher.dto.response.Response;
 import com.tutuka.transactionmatcher.dto.response.UnmatchedReport;
 import com.tutuka.transactionmatcher.entity.Transaction;
+import com.tutuka.transactionmatcher.exception.InvalidFileException;
+import com.tutuka.transactionmatcher.exception.UnrecognizedColumnException;
 import com.tutuka.transactionmatcher.repository.ReportRepository;
 import com.tutuka.transactionmatcher.service.ReportService;
 import com.tutuka.transactionmatcher.utils.CsvUtil;
@@ -26,8 +29,11 @@ public class ReportController {
     private final ReportRepository reportRepository;
 
     @PostMapping("/generate")
-    public Response<ReportReferenceNumber> generateReport(@RequestParam("referenceFile")MultipartFile refFile,
-                                                          @RequestParam("compareFile") MultipartFile comFile) {
+    public Response<ReportReferenceNumber> generateReport(@RequestParam("referenceFile") MultipartFile refFile,
+                                                          @RequestParam("compareFile") MultipartFile comFile) throws InterruptedException {
+        log.info("Generate report API invoked - request: {}, {}",
+                refFile.getOriginalFilename(), comFile.getOriginalFilename());
+
         try {
             List<Transaction> t1 = CsvUtil.read(refFile.getInputStream());
             List<Transaction> t2 = CsvUtil.read(comFile.getInputStream());
@@ -36,10 +42,13 @@ public class ReportController {
 
             return Response.ok(reportReferenceNumber);
         } catch (IOException e) {
-            log.error("IO fail: " + e.getMessage());
-            throw new RuntimeException();
+            if (e instanceof UnrecognizedPropertyException) {
+                throw new UnrecognizedColumnException(e);
+            } else
+                throw new InvalidFileException(e);
         }
     }
+
 
     @GetMapping("/match")
     public Response<MatchReport> getMatchReport(@RequestParam String rrn) {
@@ -53,3 +62,4 @@ public class ReportController {
         return Response.ok(unmatchedReport);
     }
 }
+

@@ -1,6 +1,5 @@
 package com.tutuka.transactionmatcher.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
@@ -8,7 +7,6 @@ import java.math.BigDecimal;
 import java.util.Objects;
 
 @Data
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class Transaction {
 
     private int rowNum;
@@ -20,7 +18,7 @@ public class Transaction {
     private String transactionDate;
 
     @JsonProperty("TransactionAmount")
-    BigDecimal transactionAmount;
+    private String transactionAmount;
 
     @JsonProperty("TransactionNarrative")
     private String transactionNarrative;

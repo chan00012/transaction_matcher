@@ -11,7 +11,7 @@ import java.util.Map;
 @Data
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public final class EvaluatedTransaction {
+public class EvaluatedTransaction {
 
     private Integer count;
     private String source;

@@ -5,7 +5,6 @@ import com.tutuka.transactionmatcher.dto.response.EvaluatedTransaction;
 import com.tutuka.transactionmatcher.dto.response.MatchReport;
 import com.tutuka.transactionmatcher.dto.response.UnmatchedReport;
 import com.tutuka.transactionmatcher.entity.ReportEntity;
-import com.tutuka.transactionmatcher.entity.TaggedTransaction;
 import com.tutuka.transactionmatcher.repository.ReportRepository;
 import com.tutuka.transactionmatcher.utils.enums.Origin;
 import com.tutuka.transactionmatcher.utils.enums.ReportStatus;

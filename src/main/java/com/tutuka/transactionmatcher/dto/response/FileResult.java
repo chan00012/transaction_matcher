@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public final class FileResult {
+public class FileResult {
     private String fileName;
     private int totalRecords;
     private int matchingRecords;

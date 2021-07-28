@@ -7,7 +7,7 @@ import java.util.List;
 
 @Data
 @Builder
-public final class DiscrepancyMatchedTransaction {
+public class DiscrepancyMatchedTransaction {
 
     private EvaluatedTransaction referenceTransaction;
     private List<EvaluatedTransaction> possibleMatchTransactions;
