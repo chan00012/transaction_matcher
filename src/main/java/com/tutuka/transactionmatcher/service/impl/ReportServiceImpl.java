@@ -15,6 +15,7 @@ import com.tutuka.transactionmatcher.utils.enums.ReportStatus;
 import com.tutuka.transactionmatcher.utils.enums.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -107,7 +108,6 @@ public class ReportServiceImpl implements ReportService {
         reportRepository.update(rrn, matchReport);
 
         log.info("Done report evaluation and storage updated, report reference number: {}", rrn);
-        //throw new RuntimeException("HOTDOG");
     }
 
     private List<EvaluatedTransaction> getNoMatchedTransactions(Set<TaggedTransaction> refTagTxnSet,

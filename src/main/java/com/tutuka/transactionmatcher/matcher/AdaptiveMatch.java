@@ -31,36 +31,38 @@ public class AdaptiveMatch {
 
         List<DiscrepancyMatchedTransaction> discrepancyMatchedTransactions = new ArrayList<>();
         List<TaggedTransaction> qualifiedMatchedTransactions = new ArrayList<>();
+        Set<TaggedTransaction> qualifiedRefTaxTxnSet = new HashSet<>();
+        Set<TaggedTransaction> qualifiedComTaxTxnSet = new HashSet<>();
 
-        for (TaggedTransaction tagTxn1 : refTagTxnSet) {
+        for (TaggedTransaction refTagTxn : refTagTxnSet) {
             List<EvaluatedTransaction> possibleMatchTxns = new ArrayList<>();
 
-            for (TaggedTransaction tagTxn2 : comTagTxnSet) {
-                Transaction txn1 = tagTxn1.getTransaction();
-                Transaction txn2 = tagTxn2.getTransaction();
+            for (TaggedTransaction comTagTxn : comTagTxnSet) {
+                Transaction txn1 = refTagTxn.getTransaction();
+                Transaction txn2 = comTagTxn.getTransaction();
                 TaggedTransaction tagTxn = new TaggedTransaction(txn1);
 
                 tagTxn.addAllTag(negativeMatch(txn1, txn2));
 
-                if (tagTxn1.getTags().contains(Tag.DUPLICATE_REFERENCE)) {
-                    tagTxn.addAllTag(tagTxn1.getTags());
+                if (refTagTxn.getTags().contains(Tag.DUPLICATE_REFERENCE)) {
+                    tagTxn.addAllTag(refTagTxn.getTags());
                 }
 
-                if (tagTxn2.getTags().contains(Tag.DUPLICATE_COMPARE)) {
-                    tagTxn.addAllTag(tagTxn2.getTags());
+                if (comTagTxn.getTags().contains(Tag.DUPLICATE_COMPARE)) {
+                    tagTxn.addAllTag(comTagTxn.getTags());
                 }
 
                 if (tagTxn.getTags().size() <= MAX_MATCH && !tagTxn.getTags().isEmpty()) {
 
                     EvaluatedTransaction evalRefTxn = EvaluatedTransaction.builder()
-                            .source(tagTxn1.getSource())
-                            .count(tagTxn1.getCount())
+                            .source(refTagTxn.getSource())
+                            .count(refTagTxn.getCount())
                             .transaction(txn1)
                             .build();
 
                     EvaluatedTransaction evalComTxn = EvaluatedTransaction.builder()
-                            .source(tagTxn2.getSource())
-                            .count(tagTxn2.getCount())
+                            .source(comTagTxn.getSource())
+                            .count(comTagTxn.getCount())
                             .transaction(txn2)
                             .discrepancies(Tag.populateDiscrepancies(tagTxn.getTags()))
                             .build();
@@ -78,11 +80,15 @@ public class AdaptiveMatch {
                 }
 
                 if (tagTxn.getTags().isEmpty()) {
-                    qualifiedMatchedTransactions.add(tagTxn1);
+                    qualifiedMatchedTransactions.add(refTagTxn);
+                    qualifiedRefTaxTxnSet.add(refTagTxn);
+                    qualifiedComTaxTxnSet.add(comTagTxn);
                 }
             }
         }
 
+        refTagTxnSet.removeAll(qualifiedRefTaxTxnSet);
+        comTagTxnSet.removeAll(qualifiedComTaxTxnSet);
         return AdaptiveMatchResponse.builder()
                 .discrepancyMatchedTransactions(discrepancyMatchedTransactions)
                 .qualifiedMatchedTransactions(qualifiedMatchedTransactions)
