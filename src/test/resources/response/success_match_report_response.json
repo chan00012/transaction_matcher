@@ -1,0 +1,18 @@
+{
+  "status": "Success",
+  "code": "0",
+  "data": {
+    "file1": {
+      "fileName": "clientmarkofffile20140113.csv",
+      "totalRecords": 306,
+      "matchingRecords": 286,
+      "unmatchedRecods": 20
+    },
+    "file2": {
+      "fileName": "tutukamarkofffile20140113.csv",
+      "totalRecords": 305,
+      "matchingRecords": 286,
+      "unmatchedRecods": 19
+    }
+  }
+}

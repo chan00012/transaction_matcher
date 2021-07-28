@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonInclude(Include.NON_NULL)
-public final class Response<T> {
+public class Response<T> {
 
     private static final String SUCCESS = "Success";
     private static final String ERROR = "Error";
