@@ -1,5 +1,7 @@
 package com.tutuka.transactionmatcher.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tutuka.transactionmatcher.dto.response.*;
 import com.tutuka.transactionmatcher.entity.ReportEntity;
 import com.tutuka.transactionmatcher.entity.TaggedTransaction;
@@ -15,7 +17,6 @@ import com.tutuka.transactionmatcher.utils.enums.ReportStatus;
 import com.tutuka.transactionmatcher.utils.enums.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -88,21 +89,20 @@ public class ReportServiceImpl implements ReportService {
         refTagTxnSet.removeAll(matchedTransactionSet);
         comTagTxnSet.removeAll(matchedTransactionSet);
 
-        AdaptiveMatchResponse refAdMatch = adaptiveMatch.match(refTagTxnSet, comTagTxnSet);
-        AdaptiveMatchResponse comAdMatch = adaptiveMatch.match(comTagTxnSet, refTagTxnSet);
-        matchedTransactionSet.addAll(refAdMatch.getQualifiedMatchedTransactions());
-        log.info("Combined transactions with qualified discrepancies match: {}", refAdMatch.getDiscrepancyMatchedTransactions().size());
-        log.info("Combined transactions with qualified match: {}", refAdMatch.getQualifiedMatchedTransactions().size());
+        AdaptiveMatchResponse adMatch = adaptiveMatch.match(refTagTxnSet, comTagTxnSet);
+        matchedTransactionSet.addAll(adMatch.getQualifiedMatchedTransactions());
+        List<EvaluatedTransaction> noMatchTxns = getNoMatchedTransactions(refTagTxnSet, comTagTxnSet);
 
-        List<EvaluatedTransaction> noMatchTxns = getNoMatchedTransactions(refTagTxnSet, comTagTxnSet,
-                refAdMatch.getDiscrepancyMatchedTransactions(), comAdMatch.getDiscrepancyMatchedTransactions());
-
-        log.info("Combined transactions with no qualified match: {}", noMatchTxns.size());
+        log.info("Transactions with qualified discrepancies match: {}", adMatch.getDiscrepancyMatchedTransactions().size());
+        log.info("Transactions with qualified match: {}", adMatch.getQualifiedMatchedTransactions().size());
+        log.info("Transactions with no qualified match: {}", noMatchTxns.size());
         log.info("Updated matched transactions size: {}", matchedTransactionSet.size());
 
-        UnmatchedReport unmatchedReport = new UnmatchedReport();
-        unmatchedReport.setDiscrepancyMatchedTransactions(refAdMatch.getDiscrepancyMatchedTransactions());
-        unmatchedReport.setNoMatchTransactions(noMatchTxns);
+        UnmatchedReport unmatchedReport = UnmatchedReport.builder()
+                .discrepancyMatchedTransactions(adMatch.getDiscrepancyMatchedTransactions())
+                .noMatchTransactions(noMatchTxns)
+                .build();
+
         MatchReport matchReport = generateMatchReport(t1, t2, matchedTransactionSet);
         reportRepository.update(rrn, unmatchedReport);
         reportRepository.update(rrn, matchReport);
@@ -111,18 +111,10 @@ public class ReportServiceImpl implements ReportService {
     }
 
     private List<EvaluatedTransaction> getNoMatchedTransactions(Set<TaggedTransaction> refTagTxnSet,
-                                                                Set<TaggedTransaction> comTagTxnSet,
-                                                                List<DiscrepancyMatchedTransaction> refDmTxns,
-                                                                List<DiscrepancyMatchedTransaction> comDmTxns) {
-
-        comDmTxns.addAll(refDmTxns);
-        List<String> noMatchIds = comDmTxns.stream()
-                .map(cdmt -> cdmt.getReferenceTransaction().getTransaction().getTransactionId())
-                .collect(Collectors.toList());
+                                                                Set<TaggedTransaction> comTagTxnSet) {
 
         comTagTxnSet.addAll(refTagTxnSet);
         return comTagTxnSet.stream()
-                .filter(ccts -> !noMatchIds.contains(ccts.getTransaction().getTransactionId()))
                 .map(tt -> EvaluatedTransaction.builder()
                         .discrepancies(Tag.populateDiscrepancies(Collections.singleton(Tag.NO_MATCH)))
                         .count(tt.getCount())

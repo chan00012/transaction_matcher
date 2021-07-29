@@ -20,4 +20,5 @@ public class Constants {
     public static final String NON_EXISTITING_ERRCODE = "TMBE001";
     public static final String INVALID_FILETYPE_ERRCODE = "TMBE002";
     public static final String UNRECOG_COLUMN_ERRCODE = "TMBE003";
+    public static final String EMPTY_HEADER_ERRCODE = "TMBE004";
 }

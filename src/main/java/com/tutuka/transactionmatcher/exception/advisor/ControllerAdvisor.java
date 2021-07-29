@@ -3,10 +3,7 @@ package com.tutuka.transactionmatcher.exception.advisor;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.tutuka.transactionmatcher.dto.response.ErrorDetail;
 import com.tutuka.transactionmatcher.dto.response.Response;
-import com.tutuka.transactionmatcher.exception.InvalidFileException;
-import com.tutuka.transactionmatcher.exception.ReportNotExistException;
-import com.tutuka.transactionmatcher.exception.ReportStatusException;
-import com.tutuka.transactionmatcher.exception.UnrecognizedColumnException;
+import com.tutuka.transactionmatcher.exception.*;
 import com.tutuka.transactionmatcher.utils.enums.ReportStatus;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpHeaders;
@@ -43,7 +40,7 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(rne, Response.fail(errorDetail, rne.getCode()), new HttpHeaders(), HttpStatus.NOT_FOUND, request);
     }
 
-    @ExceptionHandler(value = {InvalidFileException.class, UnrecognizedColumnException.class})
+    @ExceptionHandler(value = {InvalidFileException.class, UnrecognizedColumnException.class, EmptyHeaderException.class})
     protected ResponseEntity<Object> handleFileConflict(RuntimeException re, WebRequest request) {
         ErrorDetail errorDetail;
         String code;
@@ -53,6 +50,10 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
             UnrecognizedPropertyException upe = (UnrecognizedPropertyException) uce.getCause();
             code = uce.getCode();
             errorDetail = ErrorDetail.builder().message(uce.getErrMsg(upe.getPropertyName())).build();
+        } else if (re instanceof EmptyHeaderException) {
+            EmptyHeaderException ehe = (EmptyHeaderException) re;
+            code = ehe.getCode();
+            errorDetail = ErrorDetail.builder().message(ehe.getErrMsg()).build();
         } else {
             InvalidFileException ife = (InvalidFileException) re;
             code = ife.getCode();

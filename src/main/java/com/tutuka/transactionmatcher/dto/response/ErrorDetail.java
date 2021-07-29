@@ -1,7 +1,8 @@
 package com.tutuka.transactionmatcher.dto.response;
 
 import com.tutuka.transactionmatcher.utils.Utilities;
-import lombok.*;
+import lombok.Builder;
+import lombok.Data;
 
 @Data
 @Builder

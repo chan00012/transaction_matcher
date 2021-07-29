@@ -8,6 +8,7 @@ import com.tutuka.transactionmatcher.entity.ReportEntity;
 import com.tutuka.transactionmatcher.repository.ReportRepository;
 import com.tutuka.transactionmatcher.utils.enums.Origin;
 import com.tutuka.transactionmatcher.utils.enums.ReportStatus;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Log4j2
 @Service
 public class ReportRepositoryImpl implements ReportRepository {
 
@@ -37,17 +39,17 @@ public class ReportRepositoryImpl implements ReportRepository {
 
         dmTxns.forEach(dmTxn -> {
             EvaluatedTransaction refTxn = dmTxn.getReferenceTransaction();
-            if (Origin.valueOf(refTxn.getSource()) == Origin.REFERENCE) {
+            if (refTxn.getSource().equals(Origin.REFERENCE.name())) {
                 refTxn.setSource(re.getReferenceFileName());
-            } else {
+            } else if (refTxn.getSource().equals(Origin.COMPARE.name())) {
                 refTxn.setSource(re.getCompareFileName());
             }
 
             List<EvaluatedTransaction> possibleMatchTxns = dmTxn.getPossibleMatchTransactions();
             possibleMatchTxns.forEach(pmTxn -> {
-                if (Origin.valueOf(pmTxn.getSource()) == Origin.REFERENCE) {
+                if (pmTxn.getSource().equals(Origin.REFERENCE.name())) {
                     pmTxn.setSource(re.getReferenceFileName());
-                } else {
+                } else if (pmTxn.getSource().equals(Origin.COMPARE.name())) {
                     pmTxn.setSource(re.getCompareFileName());
                 }
             });
@@ -56,9 +58,9 @@ public class ReportRepositoryImpl implements ReportRepository {
         List<EvaluatedTransaction> noMatchTxns = unmatchedReport.getNoMatchTransactions();
 
         noMatchTxns.forEach(nmTxn -> {
-            if (Origin.valueOf(nmTxn.getSource()) == Origin.REFERENCE) {
+            if (nmTxn.getSource().equals(Origin.REFERENCE.name())) {
                 nmTxn.setSource(re.getReferenceFileName());
-            } else {
+            } else if (nmTxn.getSource().equals(Origin.COMPARE.name())) {
                 nmTxn.setSource(re.getCompareFileName());
             }
         });

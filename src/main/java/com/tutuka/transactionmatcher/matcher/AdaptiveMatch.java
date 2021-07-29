@@ -36,50 +36,34 @@ public class AdaptiveMatch {
 
         for (TaggedTransaction refTagTxn : refTagTxnSet) {
             List<EvaluatedTransaction> possibleMatchTxns = new ArrayList<>();
+            DiscrepancyMatchedTransaction dmt = createBaseDMT(refTagTxn, possibleMatchTxns);
 
             for (TaggedTransaction comTagTxn : comTagTxnSet) {
                 Transaction txn1 = refTagTxn.getTransaction();
                 Transaction txn2 = comTagTxn.getTransaction();
-                TaggedTransaction tagTxn = new TaggedTransaction(txn1);
+                Set<Tag> extractedTags = getDiscrepancyTags(txn1, txn2);
+                extractedTags.addAll(refTagTxn.getTags());
+                extractedTags.addAll(comTagTxn.getTags());
 
-                tagTxn.addAllTag(negativeMatch(txn1, txn2));
-
-                if (refTagTxn.getTags().contains(Tag.DUPLICATE_REFERENCE)) {
-                    tagTxn.addAllTag(refTagTxn.getTags());
-                }
-
-                if (comTagTxn.getTags().contains(Tag.DUPLICATE_COMPARE)) {
-                    tagTxn.addAllTag(comTagTxn.getTags());
-                }
-
-                if (tagTxn.getTags().size() <= MAX_MATCH && !tagTxn.getTags().isEmpty()) {
-
-                    EvaluatedTransaction evalRefTxn = EvaluatedTransaction.builder()
-                            .source(refTagTxn.getSource())
-                            .count(refTagTxn.getCount())
-                            .transaction(txn1)
-                            .build();
-
+                if (extractedTags.size() <= MAX_MATCH && !extractedTags.isEmpty()) {
                     EvaluatedTransaction evalComTxn = EvaluatedTransaction.builder()
                             .source(comTagTxn.getSource())
                             .count(comTagTxn.getCount())
                             .transaction(txn2)
-                            .discrepancies(Tag.populateDiscrepancies(tagTxn.getTags()))
-                            .build();
-
-                    possibleMatchTxns.add(evalComTxn);
-                    DiscrepancyMatchedTransaction dmt = DiscrepancyMatchedTransaction.builder()
-                            .referenceTransaction(evalRefTxn)
-                            .possibleMatchTransactions(possibleMatchTxns)
+                            .discrepancies(Tag.populateDiscrepancies(extractedTags))
                             .build();
 
                     log.trace("Transaction id: {} has been matched adaptively. number of possible match(es): {}",
-                            evalRefTxn.getTransaction().getTransactionId(),
+                            txn1.getTransactionId(),
                             possibleMatchTxns.size());
+
+                    possibleMatchTxns.add(evalComTxn);
                     discrepancyMatchedTransactions.add(dmt);
+                    qualifiedRefTaxTxnSet.add(refTagTxn);
+                    qualifiedComTaxTxnSet.add(comTagTxn);
                 }
 
-                if (tagTxn.getTags().isEmpty()) {
+                if (extractedTags.isEmpty()) {
                     qualifiedMatchedTransactions.add(refTagTxn);
                     qualifiedRefTaxTxnSet.add(refTagTxn);
                     qualifiedComTaxTxnSet.add(comTagTxn);
@@ -95,7 +79,18 @@ public class AdaptiveMatch {
                 .build();
     }
 
-    private Set<Tag> negativeMatch(Transaction refTxn, Transaction comTxn) {
+    private DiscrepancyMatchedTransaction createBaseDMT(TaggedTransaction refTagTxn, List<EvaluatedTransaction> possibleMatchTxns) {
+        return DiscrepancyMatchedTransaction.builder()
+                .referenceTransaction(EvaluatedTransaction.builder()
+                        .source(refTagTxn.getSource())
+                        .count(refTagTxn.getCount())
+                        .transaction(refTagTxn.getTransaction())
+                        .build())
+                .possibleMatchTransactions(possibleMatchTxns)
+                .build();
+    }
+
+    private Set<Tag> getDiscrepancyTags(Transaction refTxn, Transaction comTxn) {
         Set<Tag> tags = new HashSet<>();
         List<AbstractAdaptiveMatcher> adaptiveMatchers = new ArrayList<>(context.getBeansOfType(AbstractAdaptiveMatcher.class).values());
         adaptiveMatchers.forEach(am -> am.addTag(refTxn, comTxn, tags));
