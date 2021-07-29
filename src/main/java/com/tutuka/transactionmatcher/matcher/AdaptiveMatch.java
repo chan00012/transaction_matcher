@@ -31,65 +31,66 @@ public class AdaptiveMatch {
 
         List<DiscrepancyMatchedTransaction> discrepancyMatchedTransactions = new ArrayList<>();
         List<TaggedTransaction> qualifiedMatchedTransactions = new ArrayList<>();
+        Set<TaggedTransaction> qualifiedRefTaxTxnSet = new HashSet<>();
+        Set<TaggedTransaction> qualifiedComTaxTxnSet = new HashSet<>();
 
-        for (TaggedTransaction tagTxn1 : refTagTxnSet) {
+        for (TaggedTransaction refTagTxn : refTagTxnSet) {
             List<EvaluatedTransaction> possibleMatchTxns = new ArrayList<>();
+            DiscrepancyMatchedTransaction dmt = createBaseDMT(refTagTxn, possibleMatchTxns);
 
-            for (TaggedTransaction tagTxn2 : comTagTxnSet) {
-                Transaction txn1 = tagTxn1.getTransaction();
-                Transaction txn2 = tagTxn2.getTransaction();
-                TaggedTransaction tagTxn = new TaggedTransaction(txn1);
+            for (TaggedTransaction comTagTxn : comTagTxnSet) {
+                Transaction txn1 = refTagTxn.getTransaction();
+                Transaction txn2 = comTagTxn.getTransaction();
+                Set<Tag> extractedTags = getDiscrepancyTags(txn1, txn2);
+                extractedTags.addAll(refTagTxn.getTags());
+                extractedTags.addAll(comTagTxn.getTags());
 
-                tagTxn.addAllTag(negativeMatch(txn1, txn2));
-
-                if (tagTxn1.getTags().contains(Tag.DUPLICATE_REFERENCE)) {
-                    tagTxn.addAllTag(tagTxn1.getTags());
-                }
-
-                if (tagTxn2.getTags().contains(Tag.DUPLICATE_COMPARE)) {
-                    tagTxn.addAllTag(tagTxn2.getTags());
-                }
-
-                if (tagTxn.getTags().size() <= MAX_MATCH && !tagTxn.getTags().isEmpty()) {
-
-                    EvaluatedTransaction evalRefTxn = EvaluatedTransaction.builder()
-                            .source(tagTxn1.getSource())
-                            .count(tagTxn1.getCount())
-                            .transaction(txn1)
-                            .build();
-
+                if (extractedTags.size() <= MAX_MATCH && !extractedTags.isEmpty()) {
                     EvaluatedTransaction evalComTxn = EvaluatedTransaction.builder()
-                            .source(tagTxn2.getSource())
-                            .count(tagTxn2.getCount())
+                            .source(comTagTxn.getSource())
+                            .count(comTagTxn.getCount())
                             .transaction(txn2)
-                            .discrepancies(Tag.populateDiscrepancies(tagTxn.getTags()))
-                            .build();
-
-                    possibleMatchTxns.add(evalComTxn);
-                    DiscrepancyMatchedTransaction dmt = DiscrepancyMatchedTransaction.builder()
-                            .referenceTransaction(evalRefTxn)
-                            .possibleMatchTransactions(possibleMatchTxns)
+                            .discrepancies(Tag.populateDiscrepancies(extractedTags))
                             .build();
 
                     log.trace("Transaction id: {} has been matched adaptively. number of possible match(es): {}",
-                            evalRefTxn.getTransaction().getTransactionId(),
+                            txn1.getTransactionId(),
                             possibleMatchTxns.size());
+
+                    possibleMatchTxns.add(evalComTxn);
                     discrepancyMatchedTransactions.add(dmt);
+                    qualifiedRefTaxTxnSet.add(refTagTxn);
+                    qualifiedComTaxTxnSet.add(comTagTxn);
                 }
 
-                if (tagTxn.getTags().isEmpty()) {
-                    qualifiedMatchedTransactions.add(tagTxn1);
+                if (extractedTags.isEmpty()) {
+                    qualifiedMatchedTransactions.add(refTagTxn);
+                    qualifiedRefTaxTxnSet.add(refTagTxn);
+                    qualifiedComTaxTxnSet.add(comTagTxn);
                 }
             }
         }
 
+        refTagTxnSet.removeAll(qualifiedRefTaxTxnSet);
+        comTagTxnSet.removeAll(qualifiedComTaxTxnSet);
         return AdaptiveMatchResponse.builder()
                 .discrepancyMatchedTransactions(discrepancyMatchedTransactions)
                 .qualifiedMatchedTransactions(qualifiedMatchedTransactions)
                 .build();
     }
 
-    private Set<Tag> negativeMatch(Transaction refTxn, Transaction comTxn) {
+    private DiscrepancyMatchedTransaction createBaseDMT(TaggedTransaction refTagTxn, List<EvaluatedTransaction> possibleMatchTxns) {
+        return DiscrepancyMatchedTransaction.builder()
+                .referenceTransaction(EvaluatedTransaction.builder()
+                        .source(refTagTxn.getSource())
+                        .count(refTagTxn.getCount())
+                        .transaction(refTagTxn.getTransaction())
+                        .build())
+                .possibleMatchTransactions(possibleMatchTxns)
+                .build();
+    }
+
+    private Set<Tag> getDiscrepancyTags(Transaction refTxn, Transaction comTxn) {
         Set<Tag> tags = new HashSet<>();
         List<AbstractAdaptiveMatcher> adaptiveMatchers = new ArrayList<>(context.getBeansOfType(AbstractAdaptiveMatcher.class).values());
         adaptiveMatchers.forEach(am -> am.addTag(refTxn, comTxn, tags));

@@ -5,14 +5,14 @@
     "file1": {
       "fileName": "clientmarkofffile20140113.csv",
       "totalRecords": 306,
-      "matchingRecords": 286,
-      "unmatchedRecods": 20
+      "matchingRecords": 289,
+      "unmatchedRecods": 17
     },
     "file2": {
       "fileName": "tutukamarkofffile20140113.csv",
       "totalRecords": 305,
-      "matchingRecords": 286,
-      "unmatchedRecods": 19
+      "matchingRecords": 289,
+      "unmatchedRecods": 16
     }
   }
 }

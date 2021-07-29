@@ -24,10 +24,6 @@ public class TaggedTransaction {
         this.tags.add(tag);
     }
 
-    public void addAllTag(Set<Tag> tags) {
-        this.tags.addAll(tags);
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -1,0 +1,18 @@
+{
+  "status": "Success",
+  "code": "0",
+  "data": {
+    "file1": {
+      "fileName": "multiple_duplicate_file1.csv",
+      "totalRecords": 13,
+      "matchingRecords": 2,
+      "unmatchedRecods": 11
+    },
+    "file2": {
+      "fileName": "multiple_duplicate_file2.csv",
+      "totalRecords": 7,
+      "matchingRecords": 2,
+      "unmatchedRecods": 5
+    }
+  }
+}

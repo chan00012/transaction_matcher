@@ -1,0 +1,43 @@
+{
+  "status": "Success",
+  "code": "0",
+  "data": {
+    "discrepancyMatchedTransactions": [],
+    "noMatchTransactions": [
+      {
+        "source": "success_file1.csv",
+        "transaction": {
+          "rowNum": 2,
+          "ProfileName": "Card Campaign",
+          "TransactionDate": "2014-01-11 22:27:44",
+          "TransactionAmount": "-20000",
+          "TransactionNarrative": "*MOLEPS ATM25             MOLEPOLOLE    BW",
+          "TransactionDescription": "DEDUCT",
+          "TransactionID": "0584011808649511",
+          "TransactionType": "1",
+          "WalletReference": "P_NzI2ODY2ODlfMTM4MjcwMTU2NS45MzA5"
+        },
+        "discrepancies": {
+          "NO_MATCH": "No match"
+        }
+      },
+      {
+        "source": "invalid_entry_file.csv",
+        "transaction": {
+          "rowNum": 2,
+          "ProfileName": "abc",
+          "TransactionDate": "def",
+          "TransactionAmount": "ghi",
+          "TransactionNarrative": "jkl",
+          "TransactionDescription": "mno",
+          "TransactionID": "pqr",
+          "TransactionType": "stu",
+          "WalletReference": ""
+        },
+        "discrepancies": {
+          "NO_MATCH": "No match"
+        }
+      }
+    ]
+  }
+}

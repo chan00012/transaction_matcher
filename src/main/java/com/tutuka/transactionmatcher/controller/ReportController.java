@@ -1,11 +1,13 @@
 package com.tutuka.transactionmatcher.controller;
 
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
+import com.fasterxml.jackson.dataformat.csv.CsvMappingException;
 import com.tutuka.transactionmatcher.dto.response.MatchReport;
 import com.tutuka.transactionmatcher.dto.response.ReportReferenceNumber;
 import com.tutuka.transactionmatcher.dto.response.Response;
 import com.tutuka.transactionmatcher.dto.response.UnmatchedReport;
 import com.tutuka.transactionmatcher.entity.Transaction;
+import com.tutuka.transactionmatcher.exception.EmptyHeaderException;
 import com.tutuka.transactionmatcher.exception.InvalidFileException;
 import com.tutuka.transactionmatcher.exception.UnrecognizedColumnException;
 import com.tutuka.transactionmatcher.repository.ReportRepository;
@@ -44,8 +46,11 @@ public class ReportController {
         } catch (IOException e) {
             if (e instanceof UnrecognizedPropertyException) {
                 throw new UnrecognizedColumnException(e);
-            } else
+            } else if (e instanceof CsvMappingException) {
+                throw new EmptyHeaderException(e);
+            } else {
                 throw new InvalidFileException(e);
+            }
         }
     }
 
