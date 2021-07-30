@@ -43,8 +43,8 @@ class SuccessIT extends BaseItegrationTest {
         Response<ReportReferenceNumber> response = generateRrn();
         String URI = GET_MATCH_URI + "?rrn=" + response.getData().getRrn();
 
-        await().until(() ->
-                Objects.nonNull(reportRepository.get(response.getData().getRrn()).getMatchReport()));
+        await().atMost(60, TimeUnit.SECONDS).until(() ->
+                Objects.nonNull(reportRepository.get(response.getData().getRrn()).getUnmatchedReport()));
 
         mockMvc.perform(MockMvcRequestBuilders.get(URI))
                 .andDo(print())
@@ -58,7 +58,7 @@ class SuccessIT extends BaseItegrationTest {
         Response<ReportReferenceNumber> response = generateRrn();
         String URI = GET_UNMATCH_URI + "?rrn=" + response.getData().getRrn();
 
-        await().until(() ->
+        await().atMost(60, TimeUnit.SECONDS).until(() ->
                 Objects.nonNull(reportRepository.get(response.getData().getRrn()).getUnmatchedReport()));
 
         mockMvc.perform(MockMvcRequestBuilders.get(URI))
@@ -151,8 +151,8 @@ class SuccessIT extends BaseItegrationTest {
         Response<ReportReferenceNumber> response = generateRrn();
         String URI = GET_MATCH_URI + "?rrn=" + response.getData().getRrn();
 
-        await().until(() ->
-                Objects.nonNull(reportRepository.get(response.getData().getRrn()).getMatchReport()));
+        await().atMost(60, TimeUnit.SECONDS).until(() ->
+                Objects.nonNull(reportRepository.get(response.getData().getRrn()).getUnmatchedReport()));
 
         mockMvc.perform(MockMvcRequestBuilders.get(URI))
                 .andDo(print())
