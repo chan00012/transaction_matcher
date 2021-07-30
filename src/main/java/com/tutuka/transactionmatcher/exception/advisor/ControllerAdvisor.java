@@ -63,4 +63,12 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
         log.error("Error encountered - reference: {}, code: {}, errMsg: {}", errorDetail.getReference(), code, re.getMessage());
         return handleExceptionInternal(re, Response.fail(errorDetail, code), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
+
+    @ExceptionHandler(value = {RuntimeException.class})
+    protected ResponseEntity<Object> handleReportExistenceConflict(RuntimeException e, WebRequest request) {
+        ErrorDetail errorDetail = ErrorDetail.builder().message(InternalServerException.ERR_MSG).build();
+        log.error("Uncaught exception encountered - reference: {}, code: {} exception: {}, errMsg: {}", errorDetail.getReference(),
+                InternalServerException.ERR_CODE, e.getClass().getSimpleName(), e.getMessage());
+        return handleExceptionInternal(e, Response.fail(errorDetail, InternalServerException.ERR_CODE), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
+    }
 }

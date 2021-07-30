@@ -30,7 +30,7 @@ class BusinessErrorIT extends BaseItegrationTest {
     private ReportRepository reportRepository;
 
     @Test
-    void getNonExistingMatchReport() throws Exception {
+    void testNonExistingMatchReport() throws Exception {
         when(reportRepository.get(Mockito.anyString())).thenReturn(null);
         String URI = GET_MATCH_URI + "?rrn=" + 1122334455;
 
@@ -45,7 +45,7 @@ class BusinessErrorIT extends BaseItegrationTest {
     }
 
     @Test
-    void getNonExistingUnmatchedReport() throws Exception {
+    void testNonExistingUnmatchedReport() throws Exception {
         when(reportRepository.get(Mockito.anyString())).thenReturn(null);
         String URI = GET_UNMATCH_URI + "?rrn=" + 1122334455;
 
@@ -60,7 +60,7 @@ class BusinessErrorIT extends BaseItegrationTest {
     }
 
     @Test
-    void getPendingMatchReport() throws Exception {
+    void testPendingMatchReport() throws Exception {
         when(reportRepository.get(Mockito.anyString())).thenReturn(TestUtils.getReportEntityResponse(ReportStatus.PENDING));
         String URI = GET_MATCH_URI + "?rrn=" + 1122334455;
 
@@ -75,7 +75,7 @@ class BusinessErrorIT extends BaseItegrationTest {
     }
 
     @Test
-    void getPendingUnmatchedReport() throws Exception {
+    void testPendingUnmatchedReport() throws Exception {
         when(reportRepository.get(Mockito.anyString())).thenReturn(TestUtils.getReportEntityResponse(ReportStatus.PENDING));
         String URI = GET_UNMATCH_URI + "?rrn=" + 1122334455;
 
@@ -90,7 +90,7 @@ class BusinessErrorIT extends BaseItegrationTest {
     }
 
     @Test
-    void getFailedMatchReport() throws Exception {
+    void testFailedMatchReport() throws Exception {
         when(reportRepository.get(Mockito.anyString())).thenReturn(TestUtils.getReportEntityResponse(ReportStatus.FAILED));
         String URI = GET_MATCH_URI + "?rrn=" + 1122334455;
 
@@ -105,7 +105,7 @@ class BusinessErrorIT extends BaseItegrationTest {
     }
 
     @Test
-    void getFailedUnmatchReport() throws Exception {
+    void testFailedUnmatchReport() throws Exception {
         when(reportRepository.get(Mockito.anyString())).thenReturn(TestUtils.getReportEntityResponse(ReportStatus.FAILED));
         String URI = GET_UNMATCH_URI + "?rrn=" + 1122334455;
 
@@ -120,7 +120,7 @@ class BusinessErrorIT extends BaseItegrationTest {
     }
 
     @Test
-    void invalidFileTypes() throws Exception {
+    void testInvalidFileTypes() throws Exception {
         File file1 = TestUtils.getFile("files/invalid_file.pdf");
         File file2 = TestUtils.getFile("files/tutukamarkofffile20140113.csv");
 
@@ -140,7 +140,7 @@ class BusinessErrorIT extends BaseItegrationTest {
     }
 
     @Test
-    void getUnMatchReport_unrecognizedColumn() throws Exception {
+    void testUnMatchReport_unrecognizedColumn() throws Exception {
         File file1 = TestUtils.getFile("files/unrecog_column_file.csv");
         File file2 = TestUtils.getFile("files/tutukamarkofffile20140113.csv");
 
@@ -160,7 +160,7 @@ class BusinessErrorIT extends BaseItegrationTest {
     }
 
     @Test
-    void getUnmatchReport_emptyFile() throws Exception {
+    void testUnmatchReport_emptyFile() throws Exception {
         File file1 = TestUtils.getFile("files/empty_file.csv");
         File file2 = TestUtils.getFile("files/empty_file.csv");
 
