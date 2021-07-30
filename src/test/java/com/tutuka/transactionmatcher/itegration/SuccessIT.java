@@ -150,7 +150,7 @@ class SuccessIT extends BaseItegrationTest {
 
         Response<ReportReferenceNumber> response = generateRrn();
         String URI = GET_MATCH_URI + "?rrn=" + response.getData().getRrn();
-
+        
         await().atMost(60, TimeUnit.SECONDS).until(() ->
                 Objects.nonNull(reportRepository.get(response.getData().getRrn()).getUnmatchedReport()));
 
