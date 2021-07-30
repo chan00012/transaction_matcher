@@ -57,12 +57,14 @@ public class ReportController {
 
     @GetMapping("/match")
     public Response<MatchReport> getMatchReport(@RequestParam String rrn) {
+        log.info("Get match report API invoked - rrn: {}", rrn);
         MatchReport matchReport = reportsService.getMatchReport(rrn);
         return Response.ok(matchReport);
     }
 
     @GetMapping("/unmatch")
     public Response<UnmatchedReport> getUnMatchReport(@RequestParam String rrn) {
+        log.info("Get unmatch report API invoked - rrn: {}", rrn);
         UnmatchedReport unmatchedReport = reportsService.getUnmatchReport(rrn);
         return Response.ok(unmatchedReport);
     }
