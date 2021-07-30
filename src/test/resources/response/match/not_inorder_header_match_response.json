@@ -1,0 +1,18 @@
+{
+  "status": "Success",
+  "code": "0",
+  "data": {
+    "file1": {
+      "fileName": "not_inorder_header_file.csv",
+      "totalRecords": 3,
+      "matchingRecords": 2,
+      "unmatchedRecords": 1
+    },
+    "file2": {
+      "fileName": "different_header_case_file.csv",
+      "totalRecords": 4,
+      "matchingRecords": 2,
+      "unmatchedRecords": 2
+    }
+  }
+}

@@ -129,6 +129,18 @@ class SuccessIT extends BaseItegrationTest {
                 "different_header_case_unmatch_report.json");
     }
 
+    @Test
+    void testGetMatchSuccess_notInOrderHeader() throws Exception {
+        getMatchReport("not_inorder_header_file.csv", "different_header_case_file.csv",
+                "not_inorder_header_match_response.json");
+    }
+
+    @Test
+    void testGetUnmatchSuccess_notInOrderHeader() throws Exception {
+        getUnmatchReport("not_inorder_header_file.csv", "different_header_case_file.csv",
+                "not_inorder_header_unmatch_response.json");
+    }
+
 
     private void getUnmatchReport(String filename1, String filename2, String responseFilename) throws Exception {
         File file1 = TestUtils.getFile("files/" + filename1);

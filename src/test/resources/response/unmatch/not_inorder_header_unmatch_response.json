@@ -1,0 +1,65 @@
+{
+  "status": "Success",
+  "code": "0",
+  "data": {
+    "discrepancyMatchedTransactions": [
+      {
+        "referenceTransaction": {
+          "source": "not_inorder_header_file.csv",
+          "transaction": {
+            "rowNum": 4,
+            "profileName": "Card Campaign",
+            "transactionDate": "2014-01-12 07:18:21",
+            "transactionAmount": "-10000",
+            "transactionNarrative": "PALAPYE BRANCH 2          PAL           BW",
+            "transactionDescription": "DEDUCT",
+            "transactionId": "0304012047015887",
+            "transactionType": "1",
+            "walletReference": "P_NzI5OTQ5NDRfMTM4NDE2MjA2Ny45NjUy",
+            "merchant": null
+          }
+        },
+        "possibleMatchTransactions": [
+          {
+            "source": "different_header_case_file.csv",
+            "transaction": {
+              "rowNum": 4,
+              "profileName": "Card Campaign",
+              "transactionDate": "2014-01-12 05:18:21",
+              "transactionAmount": "-10000",
+              "transactionNarrative": "PALAPYE BRANCH 2          PAL           BW",
+              "transactionDescription": "DEDUCT",
+              "transactionId": "0304012047015887",
+              "transactionType": "1",
+              "walletReference": "P_NzI5OTQ5NDRfMTM4NDE2MjA2Ny45NjUy",
+              "merchant": null
+            },
+            "discrepancies": {
+              "DATE_DISCREPANCY": "Please check the transaction date difference."
+            }
+          }
+        ]
+      }
+    ],
+    "noMatchTransactions": [
+      {
+        "source": "different_header_case_file.csv",
+        "transaction": {
+          "rowNum": 5,
+          "profileName": "Card Campaign",
+          "transactionDate": "2014-01-11 12:28:11",
+          "transactionAmount": "-5000",
+          "transactionNarrative": "CAPITAL BANK              MOGODITSHANE  BW",
+          "transactionDescription": "DEDUCT",
+          "transactionId": "0464011844938429",
+          "transactionType": "1",
+          "walletReference": "P_NzI0NjE1NzhfMTM4NzE4ODExOC43NTYy",
+          "merchant": null
+        },
+        "discrepancies": {
+          "NO_MATCH": "No match"
+        }
+      }
+    ]
+  }
+}
