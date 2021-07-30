@@ -13,6 +13,7 @@ import com.tutuka.transactionmatcher.exception.UnrecognizedColumnException;
 import com.tutuka.transactionmatcher.repository.ReportRepository;
 import com.tutuka.transactionmatcher.service.ReportService;
 import com.tutuka.transactionmatcher.utils.CsvUtil;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +28,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/v1/reports")
-public class ReportController {
+public class ReportController implements ReportApi {
 
     private final ReportService reportsService;
     private final ReportRepository reportRepository;

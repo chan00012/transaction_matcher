@@ -46,7 +46,7 @@ public class SwaggerConfig {
     @SuppressWarnings("deprecation")
     private ApiInfo apiInfo() {
         ApiInfo apiInfo = new ApiInfo(
-                "Transaction Matcher API",
+                "Transaction Matcher",
                 "Backend API for Transaction Matcher",
                 "API TOS",
                 "Terms of service",
