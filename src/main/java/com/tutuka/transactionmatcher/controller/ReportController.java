@@ -13,6 +13,8 @@ import com.tutuka.transactionmatcher.exception.UnrecognizedColumnException;
 import com.tutuka.transactionmatcher.repository.ReportRepository;
 import com.tutuka.transactionmatcher.service.ReportService;
 import com.tutuka.transactionmatcher.utils.CsvUtil;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.*;
@@ -30,9 +32,9 @@ public class ReportController {
     private final ReportService reportsService;
     private final ReportRepository reportRepository;
 
-    @PostMapping("/generate")
-    public Response<ReportReferenceNumber> generateReport(@RequestParam("referenceFile") MultipartFile refFile,
-                                                          @RequestParam("compareFile") MultipartFile comFile) throws InterruptedException {
+    @PostMapping(value = "/generate")
+    public Response<ReportReferenceNumber> generateReport(@RequestPart("referenceFile") MultipartFile refFile,
+                                                          @RequestPart("compareFile") MultipartFile comFile)  {
         log.info("Generate report API invoked - request: {}, {}",
                 refFile.getOriginalFilename(), comFile.getOriginalFilename());
 
