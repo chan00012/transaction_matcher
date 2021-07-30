@@ -9,13 +9,13 @@ import com.tutuka.transactionmatcher.entity.Transaction;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class CsvUtil {
 
-    private CsvUtil() {}
+    private CsvUtil() {
+    }
 
     private static final CsvMapper mapper = new CsvMapper();
 

@@ -1,4 +1,4 @@
-package com.tutuka.transactionmatcher.ItegrationTest;
+package com.tutuka.transactionmatcher.itegration;
 
 import com.tutuka.transactionmatcher.repository.ReportRepository;
 import com.tutuka.transactionmatcher.utils.Constants;
@@ -17,7 +17,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.io.File;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.any;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -70,7 +71,7 @@ class BusinessErrorIT extends BaseItegrationTest {
                 .andExpect(jsonPath(Constants.JSON_STATUS, is(Constants.SUCCESS)))
                 .andExpect(jsonPath(Constants.JSON_CODE, is(Constants.SUCCESS_CODE)))
                 .andExpect(jsonPath(Constants.JSON_DATA_REF, is(Matchers.any(String.class))))
-                .andExpect(jsonPath(Constants.JSON_DATA_MSG,  is(Matchers.any(String.class))));
+                .andExpect(jsonPath(Constants.JSON_DATA_MSG, is(Matchers.any(String.class))));
     }
 
     @Test
@@ -85,7 +86,7 @@ class BusinessErrorIT extends BaseItegrationTest {
                 .andExpect(jsonPath(Constants.JSON_STATUS, is(Constants.SUCCESS)))
                 .andExpect(jsonPath(Constants.JSON_CODE, is(Constants.SUCCESS_CODE)))
                 .andExpect(jsonPath(Constants.JSON_DATA_REF, is(Matchers.any(String.class))))
-                .andExpect(jsonPath(Constants.JSON_DATA_MSG,  is(Matchers.any(String.class))));
+                .andExpect(jsonPath(Constants.JSON_DATA_MSG, is(Matchers.any(String.class))));
     }
 
     @Test
@@ -100,7 +101,7 @@ class BusinessErrorIT extends BaseItegrationTest {
                 .andExpect(jsonPath(Constants.JSON_STATUS, is(Constants.ERROR)))
                 .andExpect(jsonPath(Constants.JSON_CODE, is(Constants.FAILED_REPORT_ERRCODE)))
                 .andExpect(jsonPath(Constants.JSON_ERR_REF, is(Matchers.any(String.class))))
-                .andExpect(jsonPath(Constants.JSON_ERR_MSG,  is(Matchers.any(String.class))));
+                .andExpect(jsonPath(Constants.JSON_ERR_MSG, is(Matchers.any(String.class))));
     }
 
     @Test
@@ -115,13 +116,13 @@ class BusinessErrorIT extends BaseItegrationTest {
                 .andExpect(jsonPath(Constants.JSON_STATUS, is(Constants.ERROR)))
                 .andExpect(jsonPath(Constants.JSON_CODE, is(Constants.FAILED_REPORT_ERRCODE)))
                 .andExpect(jsonPath(Constants.JSON_ERR_REF, is(Matchers.any(String.class))))
-                .andExpect(jsonPath(Constants.JSON_ERR_MSG,  is(Matchers.any(String.class))));
+                .andExpect(jsonPath(Constants.JSON_ERR_MSG, is(Matchers.any(String.class))));
     }
 
     @Test
     void invalidFileTypes() throws Exception {
-        File file1 = TestUtils.getFile("invalid_file.pdf");
-        File file2 = TestUtils.getFile("tutukamarkofffile20140113.csv");
+        File file1 = TestUtils.getFile("files/invalid_file.pdf");
+        File file2 = TestUtils.getFile("files/tutukamarkofffile20140113.csv");
 
         referenceFile = new MockMultipartFile("referenceFile", file1.getName(),
                 "pdf", FileUtils.readFileToByteArray(file1));
@@ -139,9 +140,9 @@ class BusinessErrorIT extends BaseItegrationTest {
     }
 
     @Test
-    void UnrecognizedColumn() throws Exception {
-        File file1 = TestUtils.getFile("unrecog_column_clientmarkofffile20140113.csv");
-        File file2 = TestUtils.getFile("tutukamarkofffile20140113.csv");
+    void getUnMatchReport_unrecognizedColumn() throws Exception {
+        File file1 = TestUtils.getFile("files/unrecog_column_file.csv");
+        File file2 = TestUtils.getFile("files/tutukamarkofffile20140113.csv");
 
         referenceFile = new MockMultipartFile("referenceFile", file1.getName(),
                 "pdf", FileUtils.readFileToByteArray(file1));
@@ -158,4 +159,23 @@ class BusinessErrorIT extends BaseItegrationTest {
                 .andExpect(jsonPath(Constants.JSON_ERR_MSG, is(any(String.class))));
     }
 
+    @Test
+    void getUnmatchReport_emptyFile() throws Exception {
+        File file1 = TestUtils.getFile("files/empty_file.csv");
+        File file2 = TestUtils.getFile("files/empty_file.csv");
+
+        referenceFile = new MockMultipartFile("referenceFile", file1.getName(),
+                "text/csv", FileUtils.readFileToByteArray(file1));
+        compareFile = new MockMultipartFile("compareFile", file2.getName(),
+                "text/csv", FileUtils.readFileToByteArray(file2));
+
+        mockMvc.perform(MockMvcRequestBuilders.multipart(GENERATE_URI).file(referenceFile).file(compareFile))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath(Constants.JSON_STATUS, is(Constants.ERROR)))
+                .andExpect(jsonPath(Constants.JSON_CODE, is(Constants.EMPTY_HEADER_ERRCODE)))
+                .andExpect(jsonPath(Constants.JSON_ERR_REF, is(any(String.class))))
+                .andExpect(jsonPath(Constants.JSON_ERR_MSG, is(any(String.class))));
+    }
 }

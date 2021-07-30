@@ -3,7 +3,6 @@ package com.tutuka.transactionmatcher.entity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
-import java.math.BigDecimal;
 import java.util.Objects;
 
 @Data
@@ -30,7 +29,7 @@ public class Transaction {
     private String transactionId;
 
     @JsonProperty("TransactionType")
-    private int transactionType;
+    private String transactionType;
 
     @JsonProperty("WalletReference")
     private String walletReference;
@@ -40,7 +39,7 @@ public class Transaction {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Transaction that = (Transaction) o;
-        return transactionType == that.transactionType &&
+        return Objects.equals(transactionType, that.transactionType) &&
                 Objects.equals(profileName, that.profileName) &&
                 Objects.equals(transactionDate, that.transactionDate) &&
                 Objects.equals(transactionAmount, that.transactionAmount) &&

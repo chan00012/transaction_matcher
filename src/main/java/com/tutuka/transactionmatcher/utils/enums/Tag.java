@@ -2,8 +2,6 @@ package com.tutuka.transactionmatcher.utils.enums;
 
 import lombok.Getter;
 
-import java.util.EnumMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -26,10 +24,10 @@ public enum Tag {
     private final String spiel;
 
     Tag(String spiel) {
-         this.spiel = spiel;
-     }
+        this.spiel = spiel;
+    }
 
-    public static Map<Tag, String>  populateDiscrepancies(Set<Tag> tags) {
+    public static Map<Tag, String> populateDiscrepancies(Set<Tag> tags) {
         return tags.stream().collect(Collectors.toMap(t -> t, Tag::getSpiel));
     }
 }

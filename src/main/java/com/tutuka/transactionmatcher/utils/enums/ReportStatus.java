@@ -6,5 +6,5 @@ import lombok.Getter;
 public enum ReportStatus {
     SUCCESS,
     FAILED,
-    PENDING;
+    PENDING
 }
