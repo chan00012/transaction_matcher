@@ -6,6 +6,7 @@ import com.tutuka.transactionmatcher.repository.ReportRepository;
 import com.tutuka.transactionmatcher.utils.Constants;
 import com.tutuka.transactionmatcher.utils.TestUtils;
 import org.apache.commons.io.FileUtils;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -27,19 +28,18 @@ class SuccessIT extends BaseItegrationTest {
     private ReportRepository reportRepository;
 
     @Test
-    void generateSuccess() throws Exception {
+    void testGenerateSuccess() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.multipart(GENERATE_URI).file(referenceFile).file(compareFile))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath(Constants.JSON_STATUS, is(Constants.SUCCESS)))
                 .andExpect(jsonPath(Constants.JSON_CODE, is(Constants.SUCCESS_CODE)))
-                .andExpect(jsonPath(Constants.JSON_DATA, is(notNullValue())))
                 .andExpect(jsonPath(Constants.JSON_RRN, is(any(String.class))));
     }
 
     @Test
-    void getMatchSuccess() throws Exception {
+    void testGetMatchSuccess() throws Exception {
         Response<ReportReferenceNumber> response = generateRrn();
         String URI = GET_MATCH_URI + "?rrn=" + response.getData().getRrn();
 
@@ -54,7 +54,7 @@ class SuccessIT extends BaseItegrationTest {
     }
 
     @Test
-    void getUnmatchSuccess() throws Exception {
+    void testUnmatchSuccess() throws Exception {
         Response<ReportReferenceNumber> response = generateRrn();
         String URI = GET_UNMATCH_URI + "?rrn=" + response.getData().getRrn();
 
@@ -69,50 +69,50 @@ class SuccessIT extends BaseItegrationTest {
     }
 
     @Test
-    void getMatchSuccess_multipleDuplicateEntries() throws Exception {
+    void testGetMatchSuccess_multipleDuplicateEntries() throws Exception {
         getMatchReport("multiple_duplicate_file1.csv", "multiple_duplicate_file2.csv",
                 "multiple_duplicate_match_report_response.json");
     }
 
     @Test
-    void getUnmatchSuccess_multipleDuplicateEntries() throws Exception {
+    void testGetUnmatchSuccess_multipleDuplicateEntries() throws Exception {
         getUnmatchReport("multiple_duplicate_file1.csv", "multiple_duplicate_file2.csv",
                 "multiple_duplicate_unmatch_report_response.json");
 
     }
 
     @Test
-    void getMatchSuccess_headerOnly() throws Exception {
+    void testGetMatchSuccess_headerOnly() throws Exception {
         getMatchReport("success_file1.csv", "header_only_file.csv",
                 "header_only_match_report_response.json");
     }
 
     @Test
-    void getUnmatchSuccess_headerOnly() throws Exception {
+    void testGetUnmatchSuccess_headerOnly() throws Exception {
         getUnmatchReport("success_file1.csv", "header_only_file.csv",
                 "header_only_unmatch_report_response.json");
     }
 
     @Test
-    void getMatchSuccess_invalidEntry() throws Exception {
+    void testGetMatchSuccess_invalidEntry() throws Exception {
         getMatchReport("success_file1.csv", "invalid_entry_file.csv",
                 "invalid_entry_match_report_response.json");
     }
 
     @Test
-    void getUnmatchSuccess_invalidEntry() throws Exception {
+    void testGetUnmatchSuccess_invalidEntry() throws Exception {
         getUnmatchReport("success_file1.csv", "invalid_entry_file.csv",
                 "invalid_entry_unmatch_report_response.json");
     }
 
     @Test
-    void getMatchSuccess_excessEntry() throws Exception {
+    void testGetMatchSuccess_excessEntry() throws Exception {
         getMatchReport("success_file1.csv", "excess_entry_file.csv",
                 "excess_entry_match_report_response.json");
     }
 
     @Test
-    void getUnmatchSuccess_excessEntry() throws Exception {
+    void testGetUnmatchSuccess_excessEntry() throws Exception {
         getUnmatchReport("success_file1.csv", "excess_entry_file.csv",
                 "excess_entry_unmatch_report_response.json");
     }
