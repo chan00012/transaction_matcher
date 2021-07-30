@@ -6,13 +6,13 @@
       "fileName": "success_file1.csv",
       "totalRecords": 3,
       "matchingRecords": 2,
-      "unmatchedRecods": 1
+      "unmatchedRecords": 1
     },
     "file2": {
       "fileName": "excess_entry_file.csv",
       "totalRecords": 3,
       "matchingRecords": 2,
-      "unmatchedRecods": 1
+      "unmatchedRecords": 1
     }
   }
 }

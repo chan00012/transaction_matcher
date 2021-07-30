@@ -28,7 +28,7 @@ public class TransactionTypeMatcher extends AbstractAdaptiveMatcher {
     }
 
     @Override
-    public boolean evaluate(Transaction t1, Transaction t2) {
+    public boolean thresholdMatch(Transaction t1, Transaction t2) {
         if (allowedType.contains(t1.getTransactionType()) && allowedType.contains(t2.getTransactionType())) {
             return Objects.equals(t1.getTransactionType(),t2.getTransactionType());
         } else {

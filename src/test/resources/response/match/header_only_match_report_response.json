@@ -6,13 +6,13 @@
       "fileName": "success_file1.csv",
       "totalRecords": 3,
       "matchingRecords": 0,
-      "unmatchedRecods": 3
+      "unmatchedRecords": 3
     },
     "file2": {
       "fileName": "header_only_file.csv",
       "totalRecords": 0,
       "matchingRecords": 0,
-      "unmatchedRecods": 0
+      "unmatchedRecords": 0
     }
   }
 }

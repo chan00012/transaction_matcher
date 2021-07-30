@@ -1,5 +1,6 @@
 package com.tutuka.transactionmatcher.utils;
 
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvParser;
@@ -20,6 +21,7 @@ public class CsvUtil {
     private static final CsvMapper mapper = new CsvMapper();
 
     public static List<Transaction> read(InputStream stream) throws IOException {
+        mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
         mapper.enable(CsvParser.Feature.TRIM_SPACES);
         mapper.enable(CsvParser.Feature.SKIP_EMPTY_LINES);
         mapper.enable(CsvParser.Feature.IGNORE_TRAILING_UNMAPPABLE);

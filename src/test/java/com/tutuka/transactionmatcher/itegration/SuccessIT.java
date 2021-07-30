@@ -6,7 +6,6 @@ import com.tutuka.transactionmatcher.repository.ReportRepository;
 import com.tutuka.transactionmatcher.utils.Constants;
 import com.tutuka.transactionmatcher.utils.TestUtils;
 import org.apache.commons.io.FileUtils;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -18,7 +17,8 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import static org.awaitility.Awaitility.await;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.any;
+import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -50,7 +50,7 @@ class SuccessIT extends BaseItegrationTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().json(TestUtils.readJson("response/success_match_report_response.json")));
+                .andExpect(content().json(TestUtils.readJson("response/match/success_match_report_response.json")));
     }
 
     @Test
@@ -65,7 +65,7 @@ class SuccessIT extends BaseItegrationTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().json(TestUtils.readJson("response/success_unmatch_report_response.json")));
+                .andExpect(content().json(TestUtils.readJson("response/unmatch/success_unmatch_report_response.json")));
     }
 
     @Test
@@ -116,6 +116,19 @@ class SuccessIT extends BaseItegrationTest {
         getUnmatchReport("success_file1.csv", "excess_entry_file.csv",
                 "excess_entry_unmatch_report_response.json");
     }
+
+    @Test
+    void testGetMatchSuccess_diffHeaderCase() throws Exception {
+        getMatchReport("success_file1.csv", "different_header_case_file.csv",
+                "different_header_case_match_report.json");
+    }
+
+    @Test
+    void testGetUnmatchSuccess_diffHeaderCase() throws Exception {
+        getUnmatchReport("success_file1.csv", "different_header_case_file.csv",
+                "different_header_case_unmatch_report.json");
+    }
+
 
     private void getUnmatchReport(String filename1, String filename2, String responseFilename) throws Exception {
         File file1 = TestUtils.getFile("files/" + filename1);

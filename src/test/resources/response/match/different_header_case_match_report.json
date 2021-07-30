@@ -9,10 +9,10 @@
       "unmatchedRecords": 1
     },
     "file2": {
-      "fileName": "invalid_entry_file.csv",
-      "totalRecords": 3,
+      "fileName": "different_header_case_file.csv",
+      "totalRecords": 4,
       "matchingRecords": 2,
-      "unmatchedRecords": 1
+      "unmatchedRecords": 2
     }
   }
 }

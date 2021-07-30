@@ -8,14 +8,14 @@
         "source": "success_file1.csv",
         "transaction": {
           "rowNum": 2,
-          "ProfileName": "Card Campaign",
-          "TransactionDate": "2014-01-11 22:27:44",
-          "TransactionAmount": "-20000",
-          "TransactionNarrative": "*MOLEPS ATM25             MOLEPOLOLE    BW",
-          "TransactionDescription": "DEDUCT",
-          "TransactionID": "0584011808649511",
-          "TransactionType": "1",
-          "WalletReference": "P_NzI2ODY2ODlfMTM4MjcwMTU2NS45MzA5"
+          "profileName": "Card Campaign",
+          "transactionDate": "2014-01-11 22:27:44",
+          "transactionAmount": "-20000",
+          "transactionNarrative": "*MOLEPS ATM25             MOLEPOLOLE    BW",
+          "transactionDescription": "DEDUCT",
+          "transactionId": "0584011808649511",
+          "transactionType": "1",
+          "walletReference": "P_NzI2ODY2ODlfMTM4MjcwMTU2NS45MzA5"
         },
         "discrepancies": {
           "NO_MATCH": "No match"
@@ -25,14 +25,14 @@
         "source": "invalid_entry_file.csv",
         "transaction": {
           "rowNum": 2,
-          "ProfileName": "abc",
-          "TransactionDate": "def",
-          "TransactionAmount": "ghi",
-          "TransactionNarrative": "jkl",
-          "TransactionDescription": "mno",
-          "TransactionID": "pqr",
-          "TransactionType": "stu",
-          "WalletReference": ""
+          "profileName": "abc",
+          "transactionDate": "def",
+          "transactionAmount": "ghi",
+          "transactionNarrative": "jkl",
+          "transactionDescription": "mno",
+          "transactionId": "pqr",
+          "transactionType": "stu",
+          "walletReference": ""
         },
         "discrepancies": {
           "NO_MATCH": "No match"

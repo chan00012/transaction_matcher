@@ -20,7 +20,6 @@ public enum Tag {
     DESCRIPTION_DISCREPANCY("Please check the transaction description difference."),
     DUPLICATE_REFERENCE("Please check reference transaction having duplicates."),
     DUPLICATE_COMPARE("Please check compared transaction having duplicates.");
-
     private final String spiel;
 
     Tag(String spiel) {

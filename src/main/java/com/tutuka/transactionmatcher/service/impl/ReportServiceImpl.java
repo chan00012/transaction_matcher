@@ -148,13 +148,13 @@ public class ReportServiceImpl implements ReportService {
         FileResult file1 = FileResult.builder()
                 .totalRecords(t1.size())
                 .matchingRecords(matchedTransactions.size())
-                .unmatchedRecods(t1.size() - matchedTransactions.size())
+                .unmatchedRecords(t1.size() - matchedTransactions.size())
                 .build();
 
         FileResult file2 = FileResult.builder()
                 .totalRecords(t2.size())
                 .matchingRecords(matchedTransactions.size())
-                .unmatchedRecods(t2.size() - matchedTransactions.size())
+                .unmatchedRecords(t2.size() - matchedTransactions.size())
                 .build();
 
         return MatchReport.builder()

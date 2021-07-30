@@ -27,7 +27,7 @@ public class TransactionDescriptionMatcher extends AbstractAdaptiveMatcher {
     }
 
     @Override
-    public boolean evaluate(Transaction t1, Transaction t2) {
+    public boolean thresholdMatch(Transaction t1, Transaction t2) {
         if (allowedDescriptor.stream().anyMatch(ds-> ds.equalsIgnoreCase(t1.getTransactionDescription()))
                 && allowedDescriptor.stream().anyMatch(ds-> ds.equalsIgnoreCase(t2.getTransactionDescription()))) {
             return t1.getTransactionDescription().equalsIgnoreCase(t2.getTransactionDescription());

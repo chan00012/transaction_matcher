@@ -42,7 +42,7 @@ class MatchersUT {
 
         t1.setTransactionAmount("1000");
         t2.setTransactionAmount("900");
-        assertTrue(transactionAmountMatcher.evaluate(t1, t2));
+        assertTrue(transactionAmountMatcher.thresholdMatch(t1, t2));
     }
 
     @Test
@@ -52,7 +52,7 @@ class MatchersUT {
 
         t1.setTransactionAmount("1000");
         t2.setTransactionAmount("10000");
-        assertFalse(transactionAmountMatcher.evaluate(t1, t2));
+        assertFalse(transactionAmountMatcher.thresholdMatch(t1, t2));
     }
 
     @Test
@@ -62,7 +62,7 @@ class MatchersUT {
 
         t1.setTransactionAmount("1000");
         t2.setTransactionAmount("abc");
-        assertFalse(transactionAmountMatcher.evaluate(t1, t2));
+        assertFalse(transactionAmountMatcher.thresholdMatch(t1, t2));
     }
 
     @Test
@@ -72,7 +72,7 @@ class MatchersUT {
 
         t1.setTransactionDate("2020-07-29 07:07:59");
         t2.setTransactionDate("2020-07-29 07:12:59");
-        assertTrue(transactionDateMatcher.evaluate(t1, t2));
+        assertTrue(transactionDateMatcher.thresholdMatch(t1, t2));
     }
 
     @Test
@@ -82,7 +82,7 @@ class MatchersUT {
 
         t1.setTransactionDate("2020-07-29 07:07:59");
         t2.setTransactionDate("2020-07-29 07:15:59");
-        assertFalse(transactionDateMatcher.evaluate(t1, t2));
+        assertFalse(transactionDateMatcher.thresholdMatch(t1, t2));
     }
 
     @Test
@@ -92,7 +92,7 @@ class MatchersUT {
 
         t1.setTransactionDate("2020-07-29 07:07:59");
         t2.setTransactionDate("abc");
-        assertFalse(transactionDateMatcher.evaluate(t1, t2));
+        assertFalse(transactionDateMatcher.thresholdMatch(t1, t2));
     }
 
     @Test
@@ -102,7 +102,7 @@ class MatchersUT {
 
         t1.setTransactionId("1122334455667788");
         t2.setTransactionId("1122333445567788");
-        assertTrue(transactionIdMatcher.evaluate(t1, t2));
+        assertTrue(transactionIdMatcher.thresholdMatch(t1, t2));
     }
 
     @Test
@@ -112,7 +112,7 @@ class MatchersUT {
 
         t1.setTransactionId("1122334455667788");
         t2.setTransactionId("8877665544371237");
-        assertFalse(transactionIdMatcher.evaluate(t1, t2));
+        assertFalse(transactionIdMatcher.thresholdMatch(t1, t2));
     }
 
     @Test
@@ -122,7 +122,7 @@ class MatchersUT {
 
         t1.setTransactionNarrative("Mlplole Filli100558    Gaborone      BW");
         t2.setTransactionNarrative("Molepolole Filli100558    Gaborone      BW");
-        assertTrue(transactionNarrativeMatcher.evaluate(t1, t2));
+        assertTrue(transactionNarrativeMatcher.thresholdMatch(t1, t2));
     }
 
     @Test
@@ -132,7 +132,7 @@ class MatchersUT {
 
         t1.setTransactionNarrative("ENGEN TSOLAMOSESI         GABORONE      BW");
         t2.setTransactionNarrative("Molepolole Filli100558    Gaborone      BW");
-        assertFalse(transactionNarrativeMatcher.evaluate(t1, t2));
+        assertFalse(transactionNarrativeMatcher.thresholdMatch(t1, t2));
     }
 
     @Test
@@ -142,7 +142,7 @@ class MatchersUT {
 
         t1.setTransactionDescription("DEDUCT");
         t2.setTransactionDescription("DEDUCT");
-        assertTrue(transactionDescriptionMatcher.evaluate(t1, t2));
+        assertTrue(transactionDescriptionMatcher.thresholdMatch(t1, t2));
     }
 
     @Test
@@ -152,7 +152,7 @@ class MatchersUT {
 
         t1.setTransactionDescription("DEDUCT");
         t2.setTransactionDescription("REVERSAL");
-        assertFalse(transactionDescriptionMatcher.evaluate(t1, t2));
+        assertFalse(transactionDescriptionMatcher.thresholdMatch(t1, t2));
     }
 
     @Test
@@ -162,7 +162,7 @@ class MatchersUT {
 
         t1.setTransactionDescription("DEDUCT");
         t2.setTransactionDescription("abc");
-        assertFalse(transactionDescriptionMatcher.evaluate(t1, t2));
+        assertFalse(transactionDescriptionMatcher.thresholdMatch(t1, t2));
     }
 
     @Test
@@ -172,7 +172,7 @@ class MatchersUT {
 
         t1.setTransactionType("1");
         t2.setTransactionType("1");
-        assertTrue(transactionTypeMatcher.evaluate(t1, t2));
+        assertTrue(transactionTypeMatcher.thresholdMatch(t1, t2));
     }
 
     @Test
@@ -182,7 +182,7 @@ class MatchersUT {
 
         t1.setTransactionType("1");
         t2.setTransactionType("0");
-        assertFalse(transactionTypeMatcher.evaluate(t1, t2));
+        assertFalse(transactionTypeMatcher.thresholdMatch(t1, t2));
     }
 
     @Test
@@ -192,7 +192,7 @@ class MatchersUT {
 
         t1.setTransactionType("1");
         t2.setTransactionType("abc");
-        assertFalse(transactionTypeMatcher.evaluate(t1, t2));
+        assertFalse(transactionTypeMatcher.thresholdMatch(t1, t2));
     }
 
     @Test
@@ -202,7 +202,7 @@ class MatchersUT {
 
         t1.setWalletReference("P_NzI5NTA3MzFfMTM4NjMzMjM2Mi42NTI2");
         t2.setWalletReference("P_NzI5NTA3MzFfMTM4NjMzMjM2Mi42NTI2");
-        assertTrue(walletReferenceMatcher.evaluate(t1, t2));
+        assertTrue(walletReferenceMatcher.thresholdMatch(t1, t2));
     }
 
     @Test
@@ -212,6 +212,6 @@ class MatchersUT {
 
         t1.setWalletReference("P_NzI5NTA3MzFfMTM4NjMzMjM2Mi42NTI2");
         t2.setWalletReference("P_NzI5NTA3MzFfMTM4NjMzMjM2Mi42NTI2abc");
-        assertFalse(walletReferenceMatcher.evaluate(t1, t2));
+        assertFalse(walletReferenceMatcher.thresholdMatch(t1, t2));
     }
 }

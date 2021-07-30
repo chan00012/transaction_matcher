@@ -15,7 +15,7 @@ public class WalletReferenceMatcher extends AbstractAdaptiveMatcher {
     }
 
     @Override
-    public boolean evaluate(Transaction t1, Transaction t2) {
+    public boolean thresholdMatch(Transaction t1, Transaction t2) {
         return Objects.equals(t1.getWalletReference(), t2.getWalletReference());
     }
 }

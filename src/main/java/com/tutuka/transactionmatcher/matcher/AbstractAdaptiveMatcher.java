@@ -14,7 +14,7 @@ public abstract class AbstractAdaptiveMatcher implements BaseAdaptiveMatcher<Tra
     }
 
     public void addTag(Transaction t1, Transaction t2, Set<Tag> tags) {
-        if (!evaluate(t1, t2)) {
+        if (!thresholdMatch(t1, t2)) {
             tags.add(tag);
         }
     }

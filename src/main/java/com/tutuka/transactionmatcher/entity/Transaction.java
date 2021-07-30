@@ -1,6 +1,8 @@
 package com.tutuka.transactionmatcher.entity;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
 
 import java.util.Objects;
@@ -9,29 +11,13 @@ import java.util.Objects;
 public class Transaction {
 
     private int rowNum;
-
-    @JsonProperty("ProfileName")
     private String profileName;
-
-    @JsonProperty("TransactionDate")
     private String transactionDate;
-
-    @JsonProperty("TransactionAmount")
     private String transactionAmount;
-
-    @JsonProperty("TransactionNarrative")
     private String transactionNarrative;
-
-    @JsonProperty("TransactionDescription")
     private String transactionDescription;
-
-    @JsonProperty("TransactionID")
     private String transactionId;
-
-    @JsonProperty("TransactionType")
     private String transactionType;
-
-    @JsonProperty("WalletReference")
     private String walletReference;
 
     @Override
@@ -51,6 +37,7 @@ public class Transaction {
 
     @Override
     public int hashCode() {
-        return Objects.hash(profileName, transactionDate, transactionAmount, transactionNarrative, transactionDescription, transactionId, transactionType, walletReference);
+        return Objects.hash(profileName, transactionDate, transactionAmount, transactionNarrative,
+                transactionDescription, transactionId, transactionType, walletReference);
     }
 }

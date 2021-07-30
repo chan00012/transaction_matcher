@@ -30,7 +30,7 @@ public class TransactionNarrativeMatcher extends AbstractAdaptiveMatcher {
     }
 
     @Override
-    public boolean evaluate(Transaction t1, Transaction t2) {
+    public boolean thresholdMatch(Transaction t1, Transaction t2) {
         if (Objects.equals(t1.getTransactionNarrative(), t2.getTransactionNarrative())) {
             return true;
         }

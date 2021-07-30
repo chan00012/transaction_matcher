@@ -8,14 +8,14 @@
         "source": "success_file1.csv",
         "transaction": {
           "rowNum": 4,
-          "ProfileName": "Card Campaign",
-          "TransactionDate": "2014-01-11 23:28:11",
-          "TransactionAmount": "-5000",
-          "TransactionNarrative": "CAPITAL BANK              MOGODITSHANE  BW",
-          "TransactionDescription": "DEDUCT",
-          "TransactionID": "0464011844938429",
-          "TransactionType": "1",
-          "WalletReference": "P_NzI0NjE1NzhfMTM4NzE4ODExOC43NTYy"
+          "profileName": "Card Campaign",
+          "transactionDate": "2014-01-11 23:28:11",
+          "transactionAmount": "-5000",
+          "transactionNarrative": "CAPITAL BANK              MOGODITSHANE  BW",
+          "transactionDescription": "DEDUCT",
+          "transactionId": "0464011844938429",
+          "transactionType": "1",
+          "walletReference": "P_NzI0NjE1NzhfMTM4NzE4ODExOC43NTYy"
         },
         "discrepancies": {
           "NO_MATCH": "No match"
@@ -25,14 +25,14 @@
         "source": "success_file1.csv",
         "transaction": {
           "rowNum": 2,
-          "ProfileName": "Card Campaign",
-          "TransactionDate": "2014-01-11 22:27:44",
-          "TransactionAmount": "-20000",
-          "TransactionNarrative": "*MOLEPS ATM25             MOLEPOLOLE    BW",
-          "TransactionDescription": "DEDUCT",
-          "TransactionID": "0584011808649511",
-          "TransactionType": "1",
-          "WalletReference": "P_NzI2ODY2ODlfMTM4MjcwMTU2NS45MzA5"
+          "profileName": "Card Campaign",
+          "transactionDate": "2014-01-11 22:27:44",
+          "transactionAmount": "-20000",
+          "transactionNarrative": "*MOLEPS ATM25             MOLEPOLOLE    BW",
+          "transactionDescription": "DEDUCT",
+          "transactionId": "0584011808649511",
+          "transactionType": "1",
+          "walletReference": "P_NzI2ODY2ODlfMTM4MjcwMTU2NS45MzA5"
         },
         "discrepancies": {
           "NO_MATCH": "No match"
@@ -42,14 +42,14 @@
         "source": "success_file1.csv",
         "transaction": {
           "rowNum": 3,
-          "ProfileName": "Card Campaign",
-          "TransactionDate": "2014-01-11 22:39:11",
-          "TransactionAmount": "-10000",
-          "TransactionNarrative": "*MOGODITSHANE2            MOGODITHSANE  BW",
-          "TransactionDescription": "DEDUCT",
-          "TransactionID": "0584011815513406",
-          "TransactionType": "1",
-          "WalletReference": "P_NzI1MjA1NjZfMTM3ODczODI3Mi4wNzY5"
+          "profileName": "Card Campaign",
+          "transactionDate": "2014-01-11 22:39:11",
+          "transactionAmount": "-10000",
+          "transactionNarrative": "*MOGODITSHANE2            MOGODITHSANE  BW",
+          "transactionDescription": "DEDUCT",
+          "transactionId": "0584011815513406",
+          "transactionType": "1",
+          "walletReference": "P_NzI1MjA1NjZfMTM3ODczODI3Mi4wNzY5"
         },
         "discrepancies": {
           "NO_MATCH": "No match"

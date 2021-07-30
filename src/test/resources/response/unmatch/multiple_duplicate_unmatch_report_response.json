@@ -9,14 +9,14 @@
           "source": "multiple_duplicate_file1.csv",
           "transaction": {
             "rowNum": 2,
-            "ProfileName": "Card Campaign",
-            "TransactionDate": "2014-01-11 22:27:44",
-            "TransactionAmount": "-20000",
-            "TransactionNarrative": "*MOLEPS ATM25             MOLEPOLOLE    BW",
-            "TransactionDescription": "DEDUCT",
-            "TransactionID": "0584011808649511",
-            "TransactionType": "1",
-            "WalletReference": "P_NzI2ODY2ODlfMTM4MjcwMTU2NS45MzA5"
+            "profileName": "Card Campaign",
+            "transactionDate": "2014-01-11 22:27:44",
+            "transactionAmount": "-20000",
+            "transactionNarrative": "*MOLEPS ATM25             MOLEPOLOLE    BW",
+            "transactionDescription": "DEDUCT",
+            "transactionId": "0584011808649511",
+            "transactionType": "1",
+            "walletReference": "P_NzI2ODY2ODlfMTM4MjcwMTU2NS45MzA5"
           }
         },
         "possibleMatchTransactions": [
@@ -25,18 +25,18 @@
             "source": "multiple_duplicate_file2.csv",
             "transaction": {
               "rowNum": 2,
-              "ProfileName": "Card Campaign",
-              "TransactionDate": "2014-01-11 22:27:44",
-              "TransactionAmount": "-20000",
-              "TransactionNarrative": "*MOLEPS ATM25             MOLEPOLOLE    BW",
-              "TransactionDescription": "DEDUCT",
-              "TransactionID": "0584011808649511",
-              "TransactionType": "1",
-              "WalletReference": "P_NzI2ODY2ODlfMTM4MjcwMTU2NS45MzA5"
+              "profileName": "Card Campaign",
+              "transactionDate": "2014-01-11 22:27:44",
+              "transactionAmount": "-20000",
+              "transactionNarrative": "*MOLEPS ATM25             MOLEPOLOLE    BW",
+              "transactionDescription": "DEDUCT",
+              "transactionId": "0584011808649511",
+              "transactionType": "1",
+              "walletReference": "P_NzI2ODY2ODlfMTM4MjcwMTU2NS45MzA5"
             },
             "discrepancies": {
-              "DUPLICATE_REFERENCE": "Please check reference transaction having duplicates.",
-              "DUPLICATE_COMPARE": "Please check compared transaction having duplicates."
+              "DUPLICATE_COMPARE": "Please check compared transaction having duplicates.",
+              "DUPLICATE_REFERENCE": "Please check reference transaction having duplicates."
             }
           }
         ]
@@ -47,14 +47,14 @@
         "source": "multiple_duplicate_file1.csv",
         "transaction": {
           "rowNum": 14,
-          "ProfileName": "Card Campaign",
-          "TransactionDate": "2014-01-12 02:18:11",
-          "TransactionAmount": "-10000",
-          "TransactionNarrative": "PALAPYE BRANCH ATM        PALAPYE       BW",
-          "TransactionDescription": "DEDUCT",
-          "TransactionID": "0464011802918801",
-          "TransactionType": "1",
-          "WalletReference": "P_NzI5OTQ5NDRfMTM4NDE2MjA2Ny45NjUy"
+          "profileName": "Card Campaign",
+          "transactionDate": "2014-01-12 02:18:11",
+          "transactionAmount": "-10000",
+          "transactionNarrative": "PALAPYE BRANCH ATM        PALAPYE       BW",
+          "transactionDescription": "DEDUCT",
+          "transactionId": "0464011802918801",
+          "transactionType": "1",
+          "walletReference": "P_NzI5OTQ5NDRfMTM4NDE2MjA2Ny45NjUy"
         },
         "discrepancies": {
           "NO_MATCH": "No match"

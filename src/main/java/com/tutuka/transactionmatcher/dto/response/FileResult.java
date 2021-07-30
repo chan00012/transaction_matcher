@@ -9,5 +9,5 @@ public class FileResult {
     private String fileName;
     private int totalRecords;
     private int matchingRecords;
-    private int unmatchedRecods;
+    private int unmatchedRecords;
 }
