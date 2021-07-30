@@ -1,0 +1,702 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TransactionMatcher</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__html"><h1 id="transaction-matcher">Transaction Matcher</h1>
+<p>Author: Christian Salvador T. Robles<br>
+Email: <a href="mailto:cstrobles@gmail.com">cstrobles@gmail.com</a></p>
+<h2 id="introduction">Introduction</h2>
+<p>This is a backend system containing several APIs which aim to perform transaction matching/reconciliation of two sets of CSV data. This enables third-party clients to integrate with these APIs whenever they are in need of such features.</p>
+<p>This system contains 3 APIs which are:</p>
+<ul>
+<li><strong>Generate Report API -</strong> generate and evaluate report asynchronously and save it on a memory storage.</li>
+<li><strong>Get Match Report API</strong> - get the matched report indicating the total number of entries, matched, and unmatched on both files.</li>
+<li><strong>Get Unmatch Report API</strong> - get the unmatched report indicating the entries with possible matches and entries with no matches at all.</li>
+</ul>
+<h2 id="demo">Demo</h2>
+<p>This application is deployed on <a href="https://dashboard.heroku.com/apps">Heroku</a> for demonstration purposes. With these you can test this app without building it. You can download this <a href="https://drive.google.com/file/d/1EY5YngLqfmQ-uGrURxV9XmZd2l7s26St/view?usp=sharing">postman collection</a>  to test the APIs. (No postman? You can get it  <a href="https://www.postman.com/downloads/">here</a>)</p>
+<p>You can also see the swagger documentation here: <a href="https://transaction-mapper.herokuapp.com/swagger-ui.html">transaction-matcher-documentation</a></p>
+<p>Note: Heroku will put the application into sleep whenever there is no activity detected in 30 minutes. You may encounter some delay, the first time you sent a request application. The subsequent request will provide a faster response.</p>
+<h2 id="build-instructions">Build Instructions</h2>
+<p>This project requires Maven with version at least 3.0 and JDK 8 to be built. Run the following command:</p>
+<pre><code>$mvn clean install
+</code></pre>
+<h2 id="run-instructions">Run Instructions</h2>
+<p>Once the project has been built successfully, it will generate a jar file which you can run by the following command:</p>
+<pre><code>java -jar transactionmapper-1.0.0.jar
+</code></pre>
+<p>After this, the application is ready to use. You can start testing the application through <a href="http://localhost:8080">http://localhost:8080</a> . You may use my postman collection to test or navigate on swagger documentation on <a href="http://localhost:8080/swagger-ui.html">http://localhost:8080/swagger-ui.html</a>.</p>
+<h2 id="implementation">Implementation</h2>
+<p>This project was built using Java 8 + Springboot. Third-party dependencies were also used, which are the following:</p>
+<ul>
+<li><strong>lombok</strong> - removing boilerplate codes</li>
+<li><strong>jackson</strong>- dataformat-csv - mapping csv into POJO</li>
+<li><strong>commons</strong>- io - file processing</li>
+<li><strong>guava</strong> - data processing</li>
+<li><strong>awaitility</strong> - asynchronous test</li>
+<li><strong>common-langs3</strong> - String manipulation</li>
+<li><strong>swagger</strong> - API documentation</li>
+</ul>
+<h2 id="features">Features</h2>
+<ul>
+<li>The generation of report is asynchronous. Third-party can do anything first and fetch the result once available.</li>
+<li>Configurable properties - ex. file size, matcher thresholds, etc.</li>
+<li>Can handle custom fields - needs to handle in code level (please refer on Extendibility)</li>
+<li>Known file handling cases
+<ul>
+<li>works with CSV files only</li>
+<li>works fine with invalid value entries</li>
+<li>works fine with excess value entries (will disregard excess values with no matching column)</li>
+<li>works fine with trailing commas</li>
+<li>works fine with header-only file</li>
+<li>works fine with different order headers</li>
+<li>works fine with case insensitive headers</li>
+<li>works fine with empty space</li>
+<li>works fine with different order column</li>
+<li>handles invalid file types</li>
+<li>handles unrecognized columns</li>
+<li>handles empty file</li>
+</ul>
+</li>
+</ul>
+<h2 id="process-design">Process Design</h2>
+<p>The reconciliation process mainly focuses on the concept called  “<strong>negative matching</strong>”  in which each property of two transactions will be compared. Those properties that don’t match will be tagged with their appropriate discrepancy. Once the comparison is done and discrepancies on both transactions are within an acceptable range of discrepancy, they will be marked as possible matches.</p>
+<p>But the comparison between the two transactions doesn’t end there. It also undergoes “<strong>threshold matching</strong>”. Each of the transaction’s fields has a corresponding matcher class which extends <strong>AbstractAdaptiveMatcher</strong>. Under this, you can customize how each transaction’s fields can match. You can match it equally, by a certain threshold, or any custom logic on how you want to match them.<br>
+<em>(Go to Extendibility section to know how to scale this application dynamically)</em></p>
+<p>But the whole processing logic of this backend app are executed in logic in the following order.</p>
+<ol>
+<li>
+<p>Reference file and compare file will be first translated into a list POJOs called <strong>Transaction</strong>. This pojo hold a single entry of each row per file.</p>
+</li>
+<li>
+<p>Once the csv files are now translated into <strong>List&lt;Transaction&gt;</strong> which will be the <em><strong>refTxns</strong></em> and <em><strong>comTxns</strong></em>. Each of them will undergo into a method <em><strong>getInitialAndTagDuplicateTransactions()</strong></em> which tags all duplicate transaction and flatten them into a <strong>Set&lt;TaggedTransaction&gt;</strong> so only a single transaction will exist but will have a count indicator on how many times they appear on the list. With these it will produce 2 set which are the <em><strong>refTagTxnSet</strong></em> and <em><strong>comTagTxnSet</strong></em>.</p>
+</li>
+<li>
+<p>The <em><strong>refTagTxnSet</strong></em> and <em><strong>comTagTxnSet</strong></em> will perform a retain method in which the common transactions between them will remain and will be saved on another set which will be the <em><strong>matchedTransactionSets</strong></em>, these are the set of perfectly match transactions we will not process this once since this transactions are already fine. <em><strong>refTagTxnSet</strong></em> and <em><strong>comTagTxnSet</strong></em> will be updated and those transactions present from <em><strong>matchedTransactionSet</strong></em> will be removed from each one of them which each set will remain those transactions that has no perfect match with each other.</p>
+</li>
+<li>
+<p><em><strong>refTagTxnSet</strong></em> and <em><strong>comTagTxnSet</strong></em> will now under go into a method called <em>“<strong>adaptive matching</strong>”</em> in which each record of <em><strong>refTagTxnSet</strong></em> will perform a negative matching with each record of <em><strong>comTagTxnSet</strong></em>. The entry on <em><strong>comTagTxnSet</strong></em> with least negative match with the <em><strong>refTagTxnSet</strong></em> will be qualified as possible match. If ever an entry is qualified as a threshold match, it will be added matched transactions. Once adaptive match is finished it will return objects which are the ff:</p>
+<ul>
+<li><strong>DiscrepancyMatchTransactions</strong> - transactions with possible matches</li>
+<li><strong>MatchedTransactions</strong> - transactions considered as equal since they pass adapative match’s threshold, this will be also added on the <em><strong>matchTransactionSet</strong></em></li>
+</ul>
+</li>
+<li>
+<p>lastly <em><strong>refTagTxnSet</strong></em> and <em><strong>comTagTxnSet</strong></em> will also be updated, leaving only those transactions that has no matches in between them and the will be combies into a single set which is the <strong>NoMatchTransactions</strong>.</p>
+</li>
+</ol>
+<h2 id="extendibility">Extendibility</h2>
+<p>Once a good developer said:</p>
+<blockquote>
+<p><em>A great code comes with a great extendibility</em></p>
+</blockquote>
+<p>I tried my best to make this backend application dynamic as possible. One extendible feature of this backend is that you can add or remove fields to be reconcile and implement custom logic on how to reconcile a field. You can do this by following these easy steps.</p>
+<ol>
+<li>
+<p>Add your desired new field on <strong>Transaction.class</strong>  please be sure that the field you added match the column name you wanted. (This is case insentive)<br>
+<img src="https://lh3.googleusercontent.com/0KQ3B9gVJgkDb-45m0t1DE1fcdCKZxqDm7-KI6AJR7MV2UNfj98bd3Ht8JXO5K87SHOGNOmGGHLTLcrkSHYHV2UnvsObk8Dm4lLl6-3I3XNJjIpbqllHM4EzKmtrIkyWwJtW6NEfiw=w2400" alt="enter image description here"></p>
+</li>
+<li>
+<p>Supply the new field on the <strong>equals()</strong> and <strong>hasCode()</strong><br>
+<img src="https://lh3.googleusercontent.com/9MDzoyrBRxUaoPmKoKkX89nMqfQi7vCBBrwtF4W2LC1GcQhV4kp1tHFg3ugVlHXyoy1IlXcJUed2Di3KCjRxIJgTJFrfiwrcQrfAQWV0uATukWBKbYs8zU5pOQPunMmG4LuWxP6WTA=w2400" alt="enter image description here"></p>
+</li>
+<li>
+<p>Supply proper discrepancy on the <strong>Tag.class</strong><br>
+<img src="https://lh3.googleusercontent.com/6WWSaYdfnaXRBzsXKEG33NmQ5JpkGUmKmFuhpVIPLzYM3Hkkvs6p-J1AhZ5ysGOeEUgZvJnlYy19gOdf5DAfZDaZHOTp7wVXwnzVGfu96qxnyPOCpCdQvKZh4FPIMPwfahNgP1ryvw=w2400" alt="enter image description here"></p>
+</li>
+<li>
+<p>Create your own logic for the field matcher by extending this class <strong>AbstractAdaptiveMatcher.class</strong> supply the enum we’ve created on step 3 on the constructor and override the thresholdMatching() method and implement your own method on how to match the field.<br>
+<img src="https://lh3.googleusercontent.com/VpfMQxj3ADmvjTGx-G50nQDH64lXcwW_ffzE_4ao6c_nPLbF5WLy0HABBwEqkjwZTcK1LiyKAtj7BSfRTbwaBY9wsf917R2iLDgaqwx5zM2kA1ilgK65UxkEntcXH5MJ-yQgzwMnYA=w2400" alt="enter image description here"></p>
+</li>
+<li>
+<p>Compile and run the project. If it works then you’ve successfully extend the code. But if not, please file a ticket and let me fix it :)</p>
+</li>
+</ol>
+<p>By default there are 8 out-of-the-box matchers and I’ve made their threshold values configurable and you can find it on the <em>application.properies</em></p>
+<pre><code>#MATCHER PROPERTIES  
+matcher.date.duration=5 
+matcher.date.timeUnit=Minutes  
+matcher.date.datePattern=yyyy-MM-dd HH:mm:ss  
+matcher.amount.amountThreshold=100.00  
+matcher.description.allowedDescriptor[0]=DEDUCT  
+matcher.description.allowedDescriptor[1]=REVERSAL  
+matcher.id.charThreshold=6  
+matcher.narrative.charThreshold=8  
+matcher.type.allowedType[0]=0  
+matcher.type.allowedType[1]=1
+</code></pre>
+<h1 id="apis">APIs</h1>
+<p>Swagger documentation <a href="https://transaction-mapper.herokuapp.com/swagger-ui.html">here</a></p>
+<h2 id="generate-report-api-post-v1reportsgenerate">Generate Report API ([POST] v1/reports/generate)</h2>
+<p>This API is used to generate and evaluate the transaction reconciliation between 2 input files. This API is asynchronous in which it will immediately return a report reference number which can be used later to retrieved the report. Once the API is hit it will trigger a separate thread that evaluate the files at background process and save it in the memory once done, making it a good use for large files which take longer time to process. Integrating client can do any task first after they trigger the API and retrieve it once it is ready.</p>
+<p>Sample cURL Request:</p>
+<pre><code>curl --location --request POST 'https://transaction-mapper.herokuapp.com/v1/reports/generate' \
+
+--form 'referenceFile=@"/C:/Users/Christian/IdeaProjects/transactionmapper/src/test/resources/files/excess_entry_file.csv"' \
+
+--form 'compareFile=@"/D:/Downloads/tutukamarkofffile20140113.csv"'
+</code></pre>
+<p>Sample JSON Response:</p>
+<pre><code>{
+    "status": "Success",
+    "code": "0",
+    "data": {
+        "rrn": "1167959003"
+    }
+}
+</code></pre>
+
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>status</td>
+<td>String</td>
+<td>indicate the transaction’s status</td>
+<td>Success, Error, Waring</td>
+</tr>
+<tr>
+<td>code</td>
+<td>String</td>
+<td>indicate transaction’s code</td>
+<td>0 = Success</td>
+</tr>
+<tr>
+<td>data</td>
+<td>Object</td>
+<td>payload of the response</td>
+<td></td>
+</tr>
+<tr>
+<td>rrn</td>
+<td>String</td>
+<td>report reference number which can be used to pull report</td>
+<td>numeric</td>
+</tr>
+</tbody>
+</table><h2 id="get-match-report-get-v1reportsmatch">Get Match Report ([GET] v1/reports/match)</h2>
+<p>This API is used to retrieve the match report from memory from the Generate Report API</p>
+<p>Sample cURL Request:</p>
+<pre><code>curl --location --request GET 'https://transaction-mapper.herokuapp.com/v1/reports/match?rrn=6576438103'
+</code></pre>
+<p>Sample JSON Response:</p>
+<pre><code>{
+    "status": "Success",
+    "code": "0",
+    "data": {
+        "file1": {
+            "fileName": "clientmarkofffile20140113.csv",
+            "totalRecords": 306,
+            "matchingRecords": 289,
+            "unmatchedRecords": 17
+        },
+        "file2": {
+            "fileName": "tutukamarkofffile20140113.csv",
+            "totalRecords": 305,
+            "matchingRecords": 289,
+            "unmatchedRecords": 16
+        }
+    }
+}
+</code></pre>
+
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>status</td>
+<td>String</td>
+<td>indicate the transaction’s status</td>
+<td>Success, Error, Waring</td>
+</tr>
+<tr>
+<td>code</td>
+<td>String</td>
+<td>indicate transaction’s code</td>
+<td>0 = Success</td>
+</tr>
+<tr>
+<td>data</td>
+<td>Object</td>
+<td>payload of the response</td>
+<td></td>
+</tr>
+<tr>
+<td>file1</td>
+<td>Object</td>
+<td>reference file object details</td>
+<td>FileResult</td>
+</tr>
+<tr>
+<td>file2</td>
+<td>Object</td>
+<td>compare file object details</td>
+<td>FileResult</td>
+</tr>
+</tbody>
+</table><h2 id="get-unmatch-report-get-v1reportsunmatch">Get Unmatch Report ([GET] v1/reports/unmatch)</h2>
+<p>This API is used to retrieve the unmatch report from memory from the Generate Report API</p>
+<p>Sample cURL Request:</p>
+<pre><code>curl --location --request GET 'https://transaction-mapper.herokuapp.com/v1/reports/unmatch?rrn=1167959003'
+</code></pre>
+<p>Sample JSON Response:</p>
+<pre><code>{
+    "status": "Success",
+    "code": "0",
+    "data": {
+        "discrepancyMatchedTransactions": [
+            {
+                "referenceTransaction": {
+                    "source": "clientmarkofffile20140113.csv",
+                    "transaction": {
+                        "rowNum": 153,
+                        "profileName": "Card Campaign",
+                        "transactionDate": "2014-01-12 15:03:05",
+                        "transactionAmount": "-6984",
+                        "transactionNarrative": "128552 P G TIMBERS MAUN   BOTSWANA      BW",
+                        "transactionDescription": "DEDUCT",
+                        "transactionId": "0084012397854064",
+                        "transactionType": "0",
+                        "walletReference": ""
+                    }
+                },
+                "possibleMatchTransactions": [
+                    {
+                        "source": "tutukamarkofffile20140113.csv",
+                        "transaction": {
+                            "rowNum": 152,
+                            "profileName": "Card Campaign",
+                            "transactionDate": "2014-01-12 15:03:05",
+                            "transactionAmount": "-6984",
+                            "transactionNarrative": "128552 P G TIMBERS MAUN   BOTSWANA      BW",
+                            "transactionDescription": "DEDUCT",
+                            "transactionId": "0084012397854064",
+                            "transactionType": "0",
+                            "walletReference": "P_Nzc1MDA3MTFfMTM4MTQ4MjU0MC4zMTc2"
+                        },
+                        "discrepancies": {
+                            "WALLET_REFERENCE_DISCREPANCY": "Please check the wallet reference difference."
+                        }
+                    }
+                ]
+            }
+        ],
+        "noMatchTransactions": [
+            {
+                "source": "clientmarkofffile20140113.csv",
+                "transaction": {
+                    "rowNum": 65,
+                    "profileName": "Card Campaign",
+                    "transactionDate": "2014-01-12 14:21:22",
+                    "transactionAmount": "-5466",
+                    "transactionNarrative": "*RED SQUARE SZ",
+                    "transactionDescription": "DEDUCT",
+                    "transactionId": "8948594584958495",
+                    "transactionType": "0",
+                    "walletReference": "P_NzIxMzExMDZfMTM4NjMyNzk1MS4wNDE2"
+                },
+                "discrepancies": {
+                    "NO_MATCH": "No match"
+                }
+            }
+        ]
+    }
+}
+</code></pre>
+
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>status</td>
+<td>String</td>
+<td>indicate the transaction’s status</td>
+<td>Success, Error, Waring</td>
+</tr>
+<tr>
+<td>code</td>
+<td>String</td>
+<td>indicate transaction’s code</td>
+<td>0 = Success</td>
+</tr>
+<tr>
+<td>data</td>
+<td>Object</td>
+<td>payload of the response</td>
+<td></td>
+</tr>
+<tr>
+<td>discrepancyMatchedTransactions</td>
+<td>List&lt;EvaluatedTransaction&gt;</td>
+<td>list of transactions with qualified match posibility</td>
+<td></td>
+</tr>
+<tr>
+<td>noMatchTransactions</td>
+<td>List&lt;EvaluatedTransaction&gt;</td>
+<td>list of transactions with no matches</td>
+<td></td>
+</tr>
+</tbody>
+</table><h2 id="object-models">Object Models</h2>
+<p><strong>FileResult</strong></p>
+
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>fileName</td>
+<td>String</td>
+<td>filename on the corresponding file object</td>
+<td>alphanumeric</td>
+</tr>
+<tr>
+<td>totalRecords</td>
+<td>int</td>
+<td>number of total records on the corresponding file object</td>
+<td></td>
+</tr>
+<tr>
+<td>matchingRecords</td>
+<td>int</td>
+<td>number of matched records on both file</td>
+<td></td>
+</tr>
+<tr>
+<td>unmatchedRecords</td>
+<td>int</td>
+<td>number of unmatched records on the corresponding file object</td>
+<td></td>
+</tr>
+</tbody>
+</table><p><strong>Transaction</strong></p>
+
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>rowNum</td>
+<td>int</td>
+<td>row number of transaction on its source</td>
+<td></td>
+</tr>
+<tr>
+<td>profileName</td>
+<td>String</td>
+<td>profile name</td>
+<td>alpha</td>
+</tr>
+<tr>
+<td>transactionDate</td>
+<td>String</td>
+<td>trasaction’s date</td>
+<td>date (YYYY-MM-dd HH:mm:ss)</td>
+</tr>
+<tr>
+<td>transactionAmount</td>
+<td>String</td>
+<td>transaction’s amount</td>
+<td>double</td>
+</tr>
+<tr>
+<td>transactionNarrative</td>
+<td>String</td>
+<td>transaction’s merchant</td>
+<td>alphanumeric</td>
+</tr>
+<tr>
+<td>transactionDescription</td>
+<td>String</td>
+<td>transaction’s descriptor type</td>
+<td>DEDUCT, REVERSAL</td>
+</tr>
+<tr>
+<td>transactionId</td>
+<td>String</td>
+<td>transaction’s id</td>
+<td>numeric</td>
+</tr>
+<tr>
+<td>transactionType</td>
+<td>String</td>
+<td>transaction’s type</td>
+<td>1,0</td>
+</tr>
+<tr>
+<td>walletReference</td>
+<td>String</td>
+<td>transaction’s wallet reference</td>
+<td>alphanumeric</td>
+</tr>
+</tbody>
+</table><p><strong>Evaluated Transaction</strong></p>
+
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+<th>Value</th>
+<th>Nullable</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>count</td>
+<td>int</td>
+<td>number of duplicates of the current transaction</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>source</td>
+<td>String</td>
+<td>filename which transaction belongs</td>
+<td>alphanumeric</td>
+<td></td>
+</tr>
+<tr>
+<td>transaction</td>
+<td>Object</td>
+<td>Single entry of file</td>
+<td>Transaction</td>
+<td></td>
+</tr>
+<tr>
+<td>discrepancies</td>
+<td>Map&lt;Tag, String&gt;</td>
+<td>combined discrepancy of source and possible</td>
+<td></td>
+<td>true</td>
+</tr>
+</tbody>
+</table><p><strong>DiscrepancyMatchTransaction</strong></p>
+
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>referernceTransaction</td>
+<td>EvaluatedTransaction</td>
+<td>reference transaction based on source file</td>
+<td></td>
+</tr>
+<tr>
+<td>possibleMatchTransactions</td>
+<td>List&lt;EvaluatedTransaction&gt;</td>
+<td>list of possible match transactions based on reference transaction</td>
+<td></td>
+</tr>
+<tr>
+<td>discrepancies</td>
+<td>Map&lt;Tag, String&gt;</td>
+<td>map of discrepancies with correspoding message</td>
+<td></td>
+</tr>
+</tbody>
+</table><p><strong>Tags</strong></p>
+
+<table>
+<thead>
+<tr>
+<th>Values</th>
+<th>Spiel</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NO_MATCH</td>
+<td>No match</td>
+</tr>
+<tr>
+<td>DATE_DISCREPANCY</td>
+<td>Please check the transaction date difference.</td>
+</tr>
+<tr>
+<td>AMOUNT_DISCREPANCY</td>
+<td>Please check the transaction amount difference.</td>
+</tr>
+<tr>
+<td>NARRATIVE_DISCREPANCY</td>
+<td>Please check the transaction narrative difference.</td>
+</tr>
+<tr>
+<td>TYPE_DISCREPANCY</td>
+<td>Please check the transaction type difference.</td>
+</tr>
+<tr>
+<td>WALLET_REFERENCE_DISCREPANCY</td>
+<td>Please check the wallet reference difference.</td>
+</tr>
+<tr>
+<td>ID_DISCREPANCY</td>
+<td>Please check the transaction id difference.</td>
+</tr>
+<tr>
+<td>DESCRIPTION_DISCREPANCY</td>
+<td>Please check the transaction description difference.</td>
+</tr>
+<tr>
+<td>DUPLICATE_REFERENCE</td>
+<td>Please check reference transaction having duplicates.</td>
+</tr>
+<tr>
+<td>DUPLICATE_COMPARE</td>
+<td>Please check compared transaction having duplicates.</td>
+</tr>
+</tbody>
+</table><h2 id="error-response">Error Response</h2>
+<pre><code>{
+    "status": "Error",
+    "code": "TMBE001",
+    "error": {
+        "reference": "3E772ABD9",
+        "message": "Report does not exist."
+    }
+}
+</code></pre>
+
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>status</td>
+<td>String</td>
+<td>indicate the transaction’s status</td>
+<td>Success, Error, Waring</td>
+</tr>
+<tr>
+<td>code</td>
+<td>String</td>
+<td>indicate transaction’s code</td>
+<td>0 = Success</td>
+</tr>
+<tr>
+<td>error</td>
+<td>Object</td>
+<td>payload of the error response</td>
+<td></td>
+</tr>
+<tr>
+<td>reference</td>
+<td>String</td>
+<td>reference number to for debugging purposes</td>
+<td></td>
+</tr>
+<tr>
+<td>message</td>
+<td>String</td>
+<td>error message</td>
+<td></td>
+</tr>
+</tbody>
+</table><h2 id="error-codes">Error Codes</h2>
+
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Error Type</th>
+<th>Cause</th>
+<th>Message</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TMIE999</td>
+<td>Internal Error</td>
+<td>Uncaught error</td>
+<td>Internal error, please try again later.</td>
+</tr>
+<tr>
+<td>TMBE000</td>
+<td>Business Error</td>
+<td>Processing error</td>
+<td>Report generation failed.</td>
+</tr>
+<tr>
+<td>TMBE001</td>
+<td>Business Error</td>
+<td>Report not exist</td>
+<td>Report does not exist.</td>
+</tr>
+<tr>
+<td>TMBE002</td>
+<td>Business Error</td>
+<td>File error</td>
+<td>Invalid file.</td>
+</tr>
+<tr>
+<td>TMBE003</td>
+<td>Business Error</td>
+<td>Invalid Column</td>
+<td>Invalid column. [%s]</td>
+</tr>
+<tr>
+<td>TMBE004</td>
+<td>Business Error</td>
+<td>Empty Header</td>
+<td>Empty header file.</td>
+</tr>
+</tbody>
+</table></div>
+</body>
+
+</html>

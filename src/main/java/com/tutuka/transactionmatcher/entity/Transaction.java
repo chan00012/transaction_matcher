@@ -19,6 +19,7 @@ public class Transaction {
     private String transactionId;
     private String transactionType;
     private String walletReference;
+    private String merchant;
 
     @Override
     public boolean equals(Object o) {

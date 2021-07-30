@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 @Getter
 public enum Tag {
 
-    MATCH("Matched"),
     NO_MATCH("No match"),
     DATE_DISCREPANCY("Please check the transaction date difference."),
     AMOUNT_DISCREPANCY("Please check the transaction amount difference."),
