@@ -22,6 +22,17 @@ Note: Heroku will put the application into sleep whenever there is no activity d
 This project requires Maven with version at least 3.0 and JDK 8 to be built. Run the following command:
 
     $mvn clean install
+if you want to build with skipping the test, run the follwing command:
+
+    $mvn -Dmaven.test.skip=true clean install
+this project is also equipped with code coverage. To execute the code coverage run the following command:
+
+      $mvn clean verify -Pjacoco
+
+code coverage reports can be found at:
+
+    /target/site/jacoco-it/index.html
+
 ## Run Instructions
 Once the project has been built successfully, it will generate a jar file which you can run by the following command:
 
@@ -68,16 +79,16 @@ _(Go to Extendibility section to know how to scale this application dynamically)
 
 But the whole processing logic of this backend app are executed in logic in the following order.
 
- 1.	Reference file and compare file will be first translated into a list POJOs called **Transaction**. This pojo hold a single entry of each row per file.
- 
- 2.	Once the csv files are now translated into **List<Transaction\>** which will be the ***refTxns*** and ***comTxns***. Each of them will undergo into a method ***getInitialAndTagDuplicateTransactions()*** which tags all duplicate transaction and flatten them into a **Set<TaggedTransaction\>** so only a single transaction will exist but will have a count indicator on how many times they appear on the list. With these it will produce 2 set which are the ***refTagTxnSet*** and ***comTagTxnSet***.
+1.	Reference file and compare file will be first translated into a list POJOs called **Transaction**. This pojo hold a single entry of each row per file.
 
- 3.	The ***refTagTxnSet*** and ***comTagTxnSet*** will perform a retain method in which the common transactions between them will remain and will be saved on another set which will be the ***matchedTransactionSets***, these are the set of perfectly match transactions we will not process this once since this transactions are already fine. ***refTagTxnSet*** and ***comTagTxnSet*** will be updated and those transactions present from ***matchedTransactionSet*** will be removed from each one of them which each set will remain those transactions that has no perfect match with each other.
+2.	Once the csv files are now translated into **List<Transaction\>** which will be the ***refTxns*** and ***comTxns***. Each of them will undergo into a method ***getInitialAndTagDuplicateTransactions()*** which tags all duplicate transaction and flatten them into a **Set<TaggedTransaction\>** so only a single transaction will exist but will have a count indicator on how many times they appear on the list. With these it will produce 2 set which are the ***refTagTxnSet*** and ***comTagTxnSet***.
+
+3.	The ***refTagTxnSet*** and ***comTagTxnSet*** will perform a retain method in which the common transactions between them will remain and will be saved on another set which will be the ***matchedTransactionSets***, these are the set of perfectly match transactions we will not process this once since this transactions are already fine. ***refTagTxnSet*** and ***comTagTxnSet*** will be updated and those transactions present from ***matchedTransactionSet*** will be removed from each one of them which each set will remain those transactions that has no perfect match with each other.
 
 4.  ***refTagTxnSet*** and ***comTagTxnSet*** will now under go into a method called *"**adaptive matching**"* in which each record of ***refTagTxnSet*** will perform a negative matching with each record of ***comTagTxnSet***. The entry on ***comTagTxnSet*** with least negative match with the ***refTagTxnSet*** will be qualified as possible match. If ever an entry is qualified as a threshold match, it will be added matched transactions. Once adaptive match is finished it will return objects which are the ff:
 
-	 - **DiscrepancyMatchTransactions** - transactions with possible matches
-	 - **MatchedTransactions** - transactions considered as equal since they pass adapative match's threshold, this will be also added on the ***matchTransactionSet***
+	- **DiscrepancyMatchTransactions** - transactions with possible matches
+	- **MatchedTransactions** - transactions considered as equal since they pass adapative match's threshold, this will be also added on the ***matchTransactionSet***
 
 5.	lastly ***refTagTxnSet*** and ***comTagTxnSet*** will also be updated, leaving only those transactions that has no matches in between them and the will be combies into a single set which is the **NoMatchTransactions**.
 
@@ -89,16 +100,16 @@ Once a good developer said:
 I tried my best to make this backend application dynamic as possible. One extendible feature of this backend is that you can add or remove fields to be reconcile and implement custom logic on how to reconcile a field. You can do this by following these easy steps.
 
 1.	Add your desired new field on **Transaction.class**  please be sure that the field you added match the column name you wanted. (This is case insentive)
-![enter image description here](https://lh3.googleusercontent.com/0KQ3B9gVJgkDb-45m0t1DE1fcdCKZxqDm7-KI6AJR7MV2UNfj98bd3Ht8JXO5K87SHOGNOmGGHLTLcrkSHYHV2UnvsObk8Dm4lLl6-3I3XNJjIpbqllHM4EzKmtrIkyWwJtW6NEfiw=w2400)
+	  ![enter image description here](https://lh3.googleusercontent.com/0KQ3B9gVJgkDb-45m0t1DE1fcdCKZxqDm7-KI6AJR7MV2UNfj98bd3Ht8JXO5K87SHOGNOmGGHLTLcrkSHYHV2UnvsObk8Dm4lLl6-3I3XNJjIpbqllHM4EzKmtrIkyWwJtW6NEfiw=w2400)
 
 2. Supply the new field on the **equals()** and **hasCode()**
-![enter image description here](https://lh3.googleusercontent.com/9MDzoyrBRxUaoPmKoKkX89nMqfQi7vCBBrwtF4W2LC1GcQhV4kp1tHFg3ugVlHXyoy1IlXcJUed2Di3KCjRxIJgTJFrfiwrcQrfAQWV0uATukWBKbYs8zU5pOQPunMmG4LuWxP6WTA=w2400)
+   ![enter image description here](https://lh3.googleusercontent.com/9MDzoyrBRxUaoPmKoKkX89nMqfQi7vCBBrwtF4W2LC1GcQhV4kp1tHFg3ugVlHXyoy1IlXcJUed2Di3KCjRxIJgTJFrfiwrcQrfAQWV0uATukWBKbYs8zU5pOQPunMmG4LuWxP6WTA=w2400)
 
 3. Supply proper discrepancy on the **Tag.class**
-![enter image description here](https://lh3.googleusercontent.com/6WWSaYdfnaXRBzsXKEG33NmQ5JpkGUmKmFuhpVIPLzYM3Hkkvs6p-J1AhZ5ysGOeEUgZvJnlYy19gOdf5DAfZDaZHOTp7wVXwnzVGfu96qxnyPOCpCdQvKZh4FPIMPwfahNgP1ryvw=w2400)
+   ![enter image description here](https://lh3.googleusercontent.com/6WWSaYdfnaXRBzsXKEG33NmQ5JpkGUmKmFuhpVIPLzYM3Hkkvs6p-J1AhZ5ysGOeEUgZvJnlYy19gOdf5DAfZDaZHOTp7wVXwnzVGfu96qxnyPOCpCdQvKZh4FPIMPwfahNgP1ryvw=w2400)
 
 4. Create your own logic for the field matcher by extending this class **AbstractAdaptiveMatcher.class** supply the enum we've created on step 3 on the constructor and override the thresholdMatching() method and implement your own method on how to match the field.
-![enter image description here](https://lh3.googleusercontent.com/VpfMQxj3ADmvjTGx-G50nQDH64lXcwW_ffzE_4ao6c_nPLbF5WLy0HABBwEqkjwZTcK1LiyKAtj7BSfRTbwaBY9wsf917R2iLDgaqwx5zM2kA1ilgK65UxkEntcXH5MJ-yQgzwMnYA=w2400)
+   ![enter image description here](https://lh3.googleusercontent.com/VpfMQxj3ADmvjTGx-G50nQDH64lXcwW_ffzE_4ao6c_nPLbF5WLy0HABBwEqkjwZTcK1LiyKAtj7BSfRTbwaBY9wsf917R2iLDgaqwx5zM2kA1ilgK65UxkEntcXH5MJ-yQgzwMnYA=w2400)
 
 5. Compile and run the project. If it works then you've successfully extend the code. But if not, please file a ticket and let me fix it :)
 
@@ -115,7 +126,7 @@ By default there are 8 out-of-the-box matchers and I've made their threshold val
     matcher.narrative.charThreshold=8  
     matcher.type.allowedType[0]=0  
     matcher.type.allowedType[1]=1
-    
+
 
 # APIs
 
@@ -189,7 +200,7 @@ Sample JSON Response:
 
 This API is used to retrieve the unmatch report from memory from the Generate Report API
 
-Sample cURL Request: 
+Sample cURL Request:
 
     curl --location --request GET 'https://transaction-mapper.herokuapp.com/v1/reports/unmatch?rrn=1167959003'
 
@@ -264,7 +275,7 @@ Sample JSON Response:
 |code|String|indicate transaction's code| 0 = Success
 |data|Object|payload of the response
 |discrepancyMatchedTransactions|List<EvaluatedTransaction\>|list of transactions with qualified match posibility
-|noMatchTransactions|List<EvaluatedTransaction\>|list of transactions with no matches| 
+|noMatchTransactions|List<EvaluatedTransaction\>|list of transactions with no matches|
 
 ## Object Models
 
@@ -329,8 +340,8 @@ Sample JSON Response:
             "message": "Report does not exist."
         }
     }
-    
-    
+
+
 |Field|Type  |Description|Value
 |--|--|--|--|
 | status |String  |indicate the transaction's status|Success, Error, Waring

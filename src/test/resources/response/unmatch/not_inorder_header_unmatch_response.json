@@ -15,8 +15,7 @@
             "transactionDescription": "DEDUCT",
             "transactionId": "0304012047015887",
             "transactionType": "1",
-            "walletReference": "P_NzI5OTQ5NDRfMTM4NDE2MjA2Ny45NjUy",
-            "merchant": null
+            "walletReference": "P_NzI5OTQ5NDRfMTM4NDE2MjA2Ny45NjUy"
           }
         },
         "possibleMatchTransactions": [
@@ -31,8 +30,7 @@
               "transactionDescription": "DEDUCT",
               "transactionId": "0304012047015887",
               "transactionType": "1",
-              "walletReference": "P_NzI5OTQ5NDRfMTM4NDE2MjA2Ny45NjUy",
-              "merchant": null
+              "walletReference": "P_NzI5OTQ5NDRfMTM4NDE2MjA2Ny45NjUy"
             },
             "discrepancies": {
               "DATE_DISCREPANCY": "Please check the transaction date difference."
@@ -53,8 +51,7 @@
           "transactionDescription": "DEDUCT",
           "transactionId": "0464011844938429",
           "transactionType": "1",
-          "walletReference": "P_NzI0NjE1NzhfMTM4NzE4ODExOC43NTYy",
-          "merchant": null
+          "walletReference": "P_NzI0NjE1NzhfMTM4NzE4ODExOC43NTYy"
         },
         "discrepancies": {
           "NO_MATCH": "No match"
